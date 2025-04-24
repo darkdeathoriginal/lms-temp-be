@@ -4,8 +4,8 @@ const express = require('express');
 // Import all specific routers
 const libraryRoutes = require('./library.routes');
 const userRoutes = require('./user.routes');
-// const genreRoutes = require('./genre.routes');
-// const authorRoutes = require('./author.routes');
+const genreRoutes = require('./genre.routes');
+const authorRoutes = require('./author.routes');
 const bookRoutes = require('./book.routes');
 // const policyRoutes = require('./policy.routes');
 // const borrowTransactionRoutes = require('./borrowTransaction.routes');
@@ -53,8 +53,8 @@ router.get('/health', (req, res) => {
 // --- Mount Entity Routes under the API Prefix ---
 router.use(`${API_PREFIX}/libraries`, libraryRoutes);
 router.use(`${API_PREFIX}/users`, userRoutes);
-// router.use(`${API_PREFIX}/genres`, genreRoutes);
-// router.use(`${API_PREFIX}/authors`, authorRoutes);
+router.use(`${API_PREFIX}/genres`, genreRoutes);
+router.use(`${API_PREFIX}/authors`, authorRoutes);
 router.use(`${API_PREFIX}/books`, bookRoutes);
 // router.use(`${API_PREFIX}/policies`, policyRoutes);
 // router.use(`${API_PREFIX}/borrow-transactions`, borrowTransactionRoutes);
