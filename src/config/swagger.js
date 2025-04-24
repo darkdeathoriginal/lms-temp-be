@@ -15,6 +15,10 @@ const options = {
         url: `http://localhost:${process.env.PORT || 3000}`, // Base URL
         description: 'Development server',
       },
+      {
+        url: `https://lms-temp-be.vercel.app`, // Production URL
+        description: 'Production server',
+      }
     ],
     components: {
         // Define reusable schemas here to avoid repetition in controllers
