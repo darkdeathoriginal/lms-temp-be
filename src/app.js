@@ -19,9 +19,9 @@ const app = express();
 const prisma = new PrismaClient(); // Instantiate prisma client
 
 // --- Middleware ---
-app.use(helmet()); // Set various HTTP headers for security
+//app.use(helmet()); // Set various HTTP headers for security
 app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+//app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev")); // HTTP request logger (use 'combined' for production)
 }
