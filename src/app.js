@@ -19,6 +19,27 @@ const app = express();
 const prisma = new PrismaClient(); // Instantiate prisma client
 
 // --- Middleware ---
+app.use(cors()); // Enable CORS
+
+// --- Configure Helmet ---
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(), // Start with Helmet's defaults
+                'script-src': ["'self'", "https://cdnjs.cloudflare.com"], // Allow scripts from 'self' and cloudflare CDN
+                'style-src': ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"], // Allow styles from 'self', inline styles (needed by swagger-ui), and cloudflare CDN
+                'img-src': ["'self'", "data:", "https://validator.swagger.io"], // Allow images from 'self', data URIs, and the swagger validator badge
+                 // Add other directives if needed (e.g., connect-src for API calls from UI)
+                 // 'connect-src': ["'self'"], // Example if UI needs to call your own API
+            },
+        },
+        // Optional: Relax other policies if they cause issues, but be cautious
+        // crossOriginEmbedderPolicy: false, // Uncomment if COEP causes issues with Swagger UI resources
+        // crossOriginResourcePolicy: { policy: "cross-origin" }, // Might be needed depending on resources
+    })
+);
+
 //app.use(helmet()); // Set various HTTP headers for security
 app.use(express.json()); // Parse JSON request bodies
 //app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
