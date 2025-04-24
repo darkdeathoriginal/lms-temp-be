@@ -91,10 +91,10 @@ const authorize = (allowedRoles = []) => {
 };
 
 // --- Convenience Role-Specific Middleware ---
-const isAdmin = authorize(['Admin']);
-const isLibrarian = authorize(['Librarian']);
-const isMember = authorize(['Member']);
-const isAdminOrLibrarian = authorize(['Admin', 'Librarian']);
+const isAdmin = authorize(['admin']);
+const isLibrarian = authorize(['librarian']);
+const isMember = authorize(['member']);
+const isAdminOrLibrarian = authorize(['admin', 'librarian']);
 
 module.exports = {
     authenticate,
