@@ -110,7 +110,8 @@ const options = {
                     book_id: { type: 'string', format: 'uuid' }, library_id: { type: 'string', format: 'uuid' }, title: { type: 'string' }, isbn: { type: 'string', nullable: true }, description: { type: 'string', nullable: true },
                     total_copies: { type: 'integer', minimum: 0 }, available_copies: { type: 'integer', minimum: 0 }, reserved_copies: { type: 'integer', minimum: 0 },
                     author_ids: { type: 'array', items: { type: 'string', format: 'uuid' } }, genre_ids: { type: 'array', items: { type: 'string', format: 'uuid' } },
-                    published_date: { type: 'string', format: 'date-time', nullable: true }, added_on: { type: 'string', format: 'date-time' }, updated_at: { type: 'string', format: 'date-time' }
+                    published_date: { type: 'string', format: 'date-time', nullable: true }, added_on: { type: 'string', format: 'date-time' }, updated_at: { type: 'string', format: 'date-time' },
+                    cover_image_url: { type: 'string', format: 'url', nullable: true },
                 }
             },
             Policy: {

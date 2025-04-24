@@ -98,6 +98,7 @@ model Book {
   published_date   DateTime?           @db.Timestamptz(6)
   added_on         DateTime            @default(now()) @db.Timestamptz(6)
   updated_at       DateTime            @updatedAt @db.Timestamptz(6)
+  cover_image_url   String?
 
   library             Library             @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]

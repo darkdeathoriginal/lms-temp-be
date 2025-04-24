@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "RoleType" AS ENUM ('Admin', 'Librarian', 'Member');
+CREATE TYPE "RoleType" AS ENUM ('admin', 'librarian', 'member');
 
 -- CreateEnum
 CREATE TYPE "BorrowStatus" AS ENUM ('borrowed', 'returned', 'overdue');
@@ -76,6 +76,7 @@ CREATE TABLE "books" (
     "published_date" TIMESTAMPTZ(6),
     "added_on" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
+    "cover_image_url" TEXT,
 
     CONSTRAINT "books_pkey" PRIMARY KEY ("book_id")
 );
