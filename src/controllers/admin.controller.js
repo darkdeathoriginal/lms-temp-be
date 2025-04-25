@@ -58,7 +58,7 @@ exports.createUser = async (req, res, next) => {
                 "country": library_country,
               },
           });
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(jwt, process.env.JWT_SECRET);
 
           
 
@@ -70,7 +70,7 @@ exports.createUser = async (req, res, next) => {
                 name,
                 email,
                 role:"admin",
-                is_active: req.body.is_active ?? true, // Default to true if not provided
+                is_active: true, // Default to true if not provided
                 // Array fields usually managed by other endpoints
                 age: req.body.age ?? null, // Default to null if not provided
                 phone_number: phone_number, // Default to null if not provided
