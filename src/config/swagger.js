@@ -132,6 +132,10 @@ const options = {
                 type: "array",
                 items: { type: "string" },
                 nullable: true,
+            },
+            gender: {
+                type: "string",
+                nullable: false,
             }
           },
         },
@@ -328,6 +332,10 @@ const options = {
               items: { type: "string" },
               nullable: true,
             },
+            gender :{
+                type: "string",
+                nullable: false,
+            }
             // Arrays usually handled by specific endpoints, not on user create/update directly
           },
         },

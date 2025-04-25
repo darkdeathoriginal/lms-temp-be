@@ -48,6 +48,7 @@ model User {
   age               Int?
   phone_number      String?
   interests          String[]            @default([]) 
+  gender          String?
 
   library             Library?            @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]
