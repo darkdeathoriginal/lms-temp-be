@@ -1,12 +1,12 @@
 // src/routes/user.routes.js
 const express = require('express');
 const userController = require('../controllers/user.controller');
-const { authenticate, isAdmin, isAdminOrLibrarian } = require('../middleware/auth.middleware');
+const { authenticate, isAdmin, isAdminOrLibrarian, verifyToken } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
 // POST /api/v1/users - Admin Only to create any user type
-router.post('/', authenticate, userController.createUser);
+router.post('/', verifyToken, userController.createUser);
 
 // GET /api/v1/users - Admin or Librarian can view all users
 router.get('/', authenticate, isAdminOrLibrarian, userController.getAllUsers);
