@@ -13,7 +13,7 @@ router.get('/', authenticate, isAdminOrLibrarian, userController.getAllUsers);
 
 // GET /api/v1/users/:id - Admin/Librarian can view any, Member can view self (Requires logic in controller or more specific middleware)
 // Simple approach: Allow Admin/Librarian
-router.get('/:id', authenticate, isAdminOrLibrarian, userController.getUserById);
+router.get('/:id', authenticate, userController.getUserById);
 // More complex: You might need middleware that checks if req.user.id === req.params.id OR req.user.role is Admin/Librarian
 
 // PUT /api/v1/users/:id - Admin can update any, Member can update self (Requires logic)
