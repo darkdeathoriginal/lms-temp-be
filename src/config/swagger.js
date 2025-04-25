@@ -126,6 +126,13 @@ const options = {
             },
             created_at: { type: "string", format: "date-time" },
             updated_at: { type: "string", format: "date-time" },
+            age: { type: "integer", nullable: true },
+            phone_number: { type: "string", nullable: true },
+            interests: {
+                type: "array",
+                items: { type: "string" },
+                nullable: true,
+            }
           },
         },
         Genre: {

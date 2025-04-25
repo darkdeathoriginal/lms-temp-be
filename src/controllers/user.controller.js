@@ -36,7 +36,7 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  */
 exports.createUser = async (req, res, next) => {
     try {
-        const { user_id, library_id, name, email, role } = req.body;
+        const { user_id, library_id, name, email, role, } = req.body;
 
         // --- Basic Input Validation ---
         if (!user_id || !library_id || !name || !email || !role) {
@@ -66,6 +66,9 @@ exports.createUser = async (req, res, next) => {
                 role,
                 is_active: req.body.is_active ?? true, // Default to true if not provided
                 // Array fields usually managed by other endpoints
+                age: req.body.age ?? null, // Default to null if not provided
+                phone_number: req.body.phone_number ?? null, // Default to null if not provided
+                interests: req.body.interests ?? [], // Default to empty array if not provided
             },
         });
         handleSuccess(res, newUser, 201);

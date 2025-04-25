@@ -45,6 +45,9 @@ model User {
   wishlist_book_ids String[]            @default([]) @db.Uuid
   created_at        DateTime            @default(now()) @db.Timestamptz(6)
   updated_at        DateTime            @updatedAt @db.Timestamptz(6)
+  age               Int?
+  phone_number      String?
+  interests          String[]            @default([]) 
 
   library             Library?            @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]
