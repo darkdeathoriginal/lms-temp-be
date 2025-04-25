@@ -2,7 +2,7 @@
 const express = require('express');
 const libraryController = require('../controllers/library.controller');
 // --- Import Auth Middleware ---
-const { authenticate, isAdmin, isAdminOrLibrarian } = require('../middleware/auth.middleware');
+const { authenticate, isAdmin, isAdminOrLibrarian, verifyToken } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -54,7 +54,7 @@ router.post('/',
  *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
-    authenticate, // Requires any logged-in user
+    verifyToken, // Requires any logged-in user
     libraryController.getAllLibraries
 );
 

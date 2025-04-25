@@ -64,6 +64,24 @@ const authenticate = async (req, res, next) => {
     }
 };
 
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return handleAuthError(res, 'Unauthorized: No token provided or invalid format.');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return handleAuthError(res, 'Unauthorized: Invalid token.');
+        }
+        req.user = decoded; // Attach the decoded token to the request object
+        next();
+    });
+}
+
 /**
  * Middleware factory to authorize requests based on allowed roles.
  * Use this *after* the `authenticate` middleware.
@@ -103,4 +121,5 @@ module.exports = {
     isLibrarian,
     isMember,
     isAdminOrLibrarian,
+    verifyToken
 };
