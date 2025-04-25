@@ -321,6 +321,13 @@ const options = {
             email: { type: "string", format: "email" },
             role: { type: "string", enum: ["Admin", "Librarian", "Member"] },
             is_active: { type: "boolean", default: true },
+            age: { type: "integer", nullable: true },
+            phone_number: { type: "string", nullable: true },
+            interests: {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+            },
             // Arrays usually handled by specific endpoints, not on user create/update directly
           },
         },
