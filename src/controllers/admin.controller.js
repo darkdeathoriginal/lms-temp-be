@@ -37,10 +37,10 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  */
 exports.createUser = async (req, res, next) => {
     try {
-        const {  library_name, name, email,jwt, library_address,library_city,library_state,library_country,phone_number} = req.body;
+        const {  library_name, name, email,jwt:token, library_address,library_city,library_state,library_country,phone_number} = req.body;
 
         // --- Basic Input Validation ---
-        if ( !library_name || !name || !email  || !jwt || !library_address || !library_city || !library_state || !library_country || !phone_number)  {
+        if ( !library_name || !name || !email  || !token || !library_address || !library_city || !library_state || !library_country || !phone_number)  {
             // Using return here to stop execution before hitting prisma query
             return res.status(400).json({ success: false, error: { message: 'Missing required fields:  library_name, name, email' } });
         }
@@ -58,7 +58,7 @@ exports.createUser = async (req, res, next) => {
                 "country": library_country,
               },
           });
-        const decoded = jwt.verify(jwt, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
           
 
