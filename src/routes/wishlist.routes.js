@@ -23,12 +23,12 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/WishlistInput' } } }
  *     responses:
  *       201: { description: 'Book added to wishlist successfully', content: { application/json: { schema: { $ref: '#/components/schemas/WishlistWithBook' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
  *       404: { description: 'Not Found - Book not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
  *       409: { description: 'Conflict - Book already in wishlist', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -57,7 +57,7 @@ router.post('/',
  *       200: { description: "User's wishlist items", content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/WishlistWithBook' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/my',
     authenticate,
@@ -81,7 +81,7 @@ router.get('/my',
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
  *       404: { description: 'Not Found - Book not found in the user wishlist', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/books/:bookId',
     authenticate,
@@ -117,10 +117,10 @@ router.delete('/books/:bookId',
  *         description: Filter by Book ID.
  *     responses:
  *       200: { description: 'A paginated list of all wishlist items', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/WishlistWithBook' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } } # Adjust schema ref if needed
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate,

@@ -22,11 +22,11 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/GenreInput' } } }
  *     responses:
  *       201: { description: 'Genre created', content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
  *       409: { description: 'Conflict - Genre name already exists', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -53,9 +53,9 @@ router.post('/',
  *       - { name: search, in: query, schema: { type: string }, description: 'Search term for genre name or description' }
  *     responses:
  *       200: { description: 'A paginated list of genres', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Genre' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate, // All authenticated users can view genres
@@ -75,8 +75,8 @@ router.get('/',
  *     responses:
  *       200: { description: 'Genre details', content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/:id',
     authenticate, // All authenticated users can view a specific genre
@@ -98,12 +98,12 @@ router.get('/:id',
  *       content: { application/json: { schema: { $ref: '#/components/schemas/GenreInput' } } } # Can send partial data (name or description or both)
  *     responses:
  *       200: { description: 'Genre updated successfully', content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
  *       409: { description: 'Conflict - Genre name already exists', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:id',
     authenticate,
@@ -127,8 +127,8 @@ router.put('/:id',
  *       400: { description: 'Bad Request - Cannot delete genre if it is in use (depending on controller logic)', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:id',
     authenticate,

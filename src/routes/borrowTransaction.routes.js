@@ -27,7 +27,7 @@ const router = express.Router();
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
  *       404: { description: 'Not Found - User, Book, or Policy not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -52,7 +52,7 @@ router.post('/',
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
  *       404: { description: 'Not Found - Borrow transaction or required Policy not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:borrowId/return',
     authenticate,
@@ -94,10 +94,10 @@ router.put('/:borrowId/return',
  *       #   schema: { type: string, format: uuid }
  *     responses:
  *       200: { description: 'A paginated list of borrow transactions', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/BorrowTransaction' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to filter by another user ID', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate, // All authenticated users can potentially access this...
@@ -120,8 +120,8 @@ router.get('/',
  *       200: { description: 'Borrow transaction details', content: { application/json: { schema: { $ref: '#/components/schemas/BorrowTransaction' } } } } # Include fine details if possible
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to view another user transaction', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/:borrowId',
     authenticate, // All authenticated users can potentially access this...

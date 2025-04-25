@@ -24,11 +24,11 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/BookInput' } } }
  *     responses:
  *       201: { description: 'Book created successfully', content: { application/json: { schema: { $ref: '#/components/schemas/Book' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
  *       409: { description: 'Conflict - ISBN already exists', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,       // Ensure user is logged in
@@ -60,9 +60,9 @@ router.post('/',
  *       - { name: search, in: query, schema: { type: string }, description: 'Search term for title or ISBN' }
  *     responses:
  *       200: { description: 'A paginated list of books', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Book' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' } # For invalid query params
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' } # For invalid query params
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate, // Requires any logged-in user
@@ -83,8 +83,8 @@ router.get('/',
  *     responses:
  *       200: { description: 'Book details', content: { application/json: { schema: { $ref: '#/components/schemas/Book' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/:id',
     authenticate, // Requires any logged-in user
@@ -107,12 +107,12 @@ router.get('/:id',
  *       content: { application/json: { schema: { $ref: '#/components/schemas/BookInput' } } } # Reusing input schema, consider specific update schema if needed
  *     responses:
  *       200: { description: 'Book updated successfully', content: { application/json: { schema: { $ref: '#/components/schemas/Book' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
  *       409: { description: 'Conflict - ISBN already exists for another book', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:id',
     authenticate,       // Ensure logged in
@@ -136,8 +136,8 @@ router.put('/:id',
  *       400: { description: 'Bad Request - Cannot delete book with active borrows/reservations', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:id',
     authenticate,       // Ensure logged in

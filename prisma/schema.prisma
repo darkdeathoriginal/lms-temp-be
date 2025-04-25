@@ -46,7 +46,7 @@ model User {
   created_at        DateTime            @default(now()) @db.Timestamptz(6)
   updated_at        DateTime            @updatedAt @db.Timestamptz(6)
 
-  library             Library             @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
+  library             Library?            @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]
   reservations        Reservation[]
   wishlists           Wishlist[]

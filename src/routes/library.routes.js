@@ -23,10 +23,10 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/LibraryInput' } } }
  *     responses:
  *       201: { description: 'Library created', content: { application/json: { schema: { $ref: '#/components/schemas/Library' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' } # Add Auth responses
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }    # Add Auth responses
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate, // 1. Check for valid token
@@ -51,7 +51,7 @@ router.post('/',
  *     responses:
  *       200: { description: 'List of libraries', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Library' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate, // Requires any logged-in user
@@ -71,8 +71,8 @@ router.get('/',
  *     responses:
  *       200: { description: 'Library details', content: { application/json: { schema: { $ref: '#/components/schemas/Library' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/:id',
     authenticate, // Requires any logged-in user
@@ -94,11 +94,11 @@ router.get('/:id',
  *       content: { application/json: { schema: { $ref: '#/components/schemas/LibraryInput' } } }
  *     responses:
  *       200: { description: 'Library updated', content: { application/json: { schema: { $ref: '#/components/schemas/Library' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:id',
     authenticate,
@@ -120,8 +120,8 @@ router.put('/:id',
  *       204: { description: 'Library deleted successfully' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:id',
     authenticate,

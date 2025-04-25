@@ -32,7 +32,7 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  *         description: Conflict - Email address already exists.
  *         content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { success: false, error: { message: "Email already exists." } } } }
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.createUser = async (req, res, next) => {
     try {
@@ -145,7 +145,7 @@ exports.createUser = async (req, res, next) => {
  *         description: Bad Request - Invalid query parameters (e.g., non-integer limit).
  *         content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.getAllUsers = async (req, res, next) => {
     try {
@@ -220,9 +220,9 @@ exports.getAllUsers = async (req, res, next) => {
  *         description: User details found successfully.
  *         content: { application/json: { schema: { $ref: '#/components/schemas/User' } } }
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.getUserById = async (req, res, next) => {
     try {
@@ -275,12 +275,12 @@ exports.getUserById = async (req, res, next) => {
  *         description: Bad Request - Invalid input data or target library does not exist.
  *         content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       409:
  *         description: Conflict - Provided email address already exists for another user.
  *         content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.updateUser = async (req, res, next) => {
     try {
@@ -339,9 +339,9 @@ exports.updateUser = async (req, res, next) => {
  *       204:
  *         description: User deleted successfully (No Content).
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.deleteUser = async (req, res, next) => {
     try {

@@ -23,12 +23,12 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/ReviewInput' } } }
  *     responses:
  *       201: { description: 'Review submitted successfully', content: { application/json: { schema: { $ref: '#/components/schemas/ReviewWithDetails' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
  *       404: { description: 'Not Found - Book not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
  *       409: { description: 'Conflict - Already reviewed this book', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -71,10 +71,10 @@ router.post('/',
  *         description: Filter by maximum rating (inclusive).
  *     responses:
  *       200: { description: 'A paginated list of all reviews', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/ReviewWithDetails' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate,
@@ -104,7 +104,7 @@ router.get('/',
  *       200: { description: "User's submitted reviews", content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/ReviewWithDetails' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } } # Adjust schema if needed
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/my',
     authenticate,
@@ -133,9 +133,9 @@ router.get('/my',
  *       - { $ref: '#/components/parameters/SortOrderQueryParam' }
  *     responses:
  *       200: { description: 'A paginated list of reviews for the book', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/ReviewWithDetails' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' } # For invalid Book ID format
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' } # For invalid Book ID format
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/book/:bookId',
     authenticate, // Any authenticated user can view reviews for a book
@@ -159,11 +159,11 @@ router.get('/book/:bookId',
  *       content: { application/json: { schema: { $ref: '#/components/schemas/ReviewUpdateInput' } } }
  *     responses:
  *       200: { description: 'Review updated successfully', content: { application/json: { schema: { $ref: '#/components/schemas/ReviewWithDetails' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to update another user review', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:reviewId',
     authenticate,
@@ -186,8 +186,8 @@ router.put('/:reviewId',
  *       204: { description: 'Review deleted successfully (No Content)' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to delete another user review', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:reviewId',
     authenticate,

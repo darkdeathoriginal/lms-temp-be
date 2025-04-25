@@ -23,11 +23,11 @@ const router = express.Router();
  *       content: { application/json: { schema: { $ref: '#/components/schemas/PolicyInput' } } }
  *     responses:
  *       201: { description: 'Policy created successfully', content: { application/json: { schema: { $ref: '#/components/schemas/Policy' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
  *       409: { description: 'Conflict - Policy already exists for this library', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -54,10 +54,10 @@ router.post('/',
  *       - { $ref: '#/components/parameters/SortOrderQueryParam' }
  *     responses:
  *       200: { description: 'A paginated list of policies', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Policy' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate,
@@ -80,7 +80,7 @@ router.get('/',
  *       200: { description: 'Policy details for the library', content: { application/json: { schema: { $ref: '#/components/schemas/Policy' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       404: { description: 'Not Found - No policy found for the specified library ID.', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/library/:libraryId',
     authenticate, // Allow any authenticated user to see the policy for a library
@@ -105,11 +105,11 @@ router.get('/library/:libraryId',
  *       content: { application/json: { schema: { $ref: '#/components/schemas/PolicyInput' } } } # Use input schema, but note only partial fields are needed
  *     responses:
  *       200: { description: 'Policy updated successfully', content: { application/json: { schema: { $ref: '#/components/schemas/Policy' } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.put('/:policyId',
     authenticate,
@@ -132,8 +132,8 @@ router.put('/:policyId',
  *       204: { description: 'Policy deleted successfully (No Content)' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:policyId',
     authenticate,

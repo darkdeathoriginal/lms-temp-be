@@ -29,9 +29,9 @@ const { authenticate, isAdmin, isAdminOrLibrarian } = require('../middleware/aut
  *             schema:
  *               $ref: '#/components/schemas/Library'
  *       400:
- *         $ref: '#/components/responses/BadRequestResponse'
+ *         $ref: '#/components/schemas/BadRequestResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.createLibrary = async (req, res, next) => {
   try {
@@ -91,7 +91,7 @@ exports.createLibrary = async (req, res, next) => {
  *                      itemsPerPage: { type: integer }
  *                      totalPages: { type: integer }
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.getAllLibraries = async (req, res, next) => {
   try {
@@ -156,9 +156,9 @@ exports.getAllLibraries = async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/Library'
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.getLibraryById = async (req, res, next) => {
   try {
@@ -201,11 +201,11 @@ exports.getLibraryById = async (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/Library'
  *       400:
- *         $ref: '#/components/responses/BadRequestResponse'
+ *         $ref: '#/components/schemas/BadRequestResponse'
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.updateLibrary = async (req, res, next) => {
   try {
@@ -237,9 +237,9 @@ exports.updateLibrary = async (req, res, next) => {
  *       204:
  *         description: Library deleted successfully (No Content)
  *       404:
- *         $ref: '#/components/responses/NotFoundResponse'
+ *         $ref: '#/components/schemas/NotFoundResponse'
  *       500:
- *         $ref: '#/components/responses/ServerErrorResponse'
+ *         $ref: '#/components/schemas/ServerErrorResponse'
  */
 exports.deleteLibrary = async (req, res, next) => {
   try {

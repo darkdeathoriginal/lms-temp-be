@@ -28,7 +28,7 @@ const router = express.Router();
  *       403: { $ref: '#/components/schemas/ForbiddenResponse' } # If role is not Member
  *       404: { description: 'Not Found - User, Book, or Policy not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
  *       409: { description: 'Conflict - Already reserved this book', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.post('/',
     authenticate,
@@ -67,10 +67,10 @@ router.post('/',
  *         description: Filter by expiry status (true=expired, false=active).
  *     responses:
  *       200: { description: 'A paginated list of reservations', content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Reservation' } }, pagination: { $ref: '#/components/schemas/PaginationInfo' } } } } } }
- *       400: { $ref: '#/components/responses/BadRequestResponse' }
+ *       400: { $ref: '#/components/schemas/BadRequestResponse' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to filter by another user ID', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/',
     authenticate, // All authenticated users can potentially access this...
@@ -93,8 +93,8 @@ router.get('/',
  *       200: { description: 'Reservation details', content: { application/json: { schema: { $ref: '#/components/schemas/Reservation' } } } }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to view another user reservation', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.get('/:reservationId',
     authenticate, // All authenticated users can potentially access this...
@@ -117,8 +117,8 @@ router.get('/:reservationId',
  *       204: { description: 'Reservation deleted successfully (No Content)' }
  *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
  *       403: { description: 'Forbidden - Member trying to delete another user reservation', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
- *       404: { $ref: '#/components/responses/NotFoundResponse' }
- *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ *       404: { $ref: '#/components/schemas/NotFoundResponse' }
+ *       500: { $ref: '#/components/schemas/ServerErrorResponse' }
  */
 router.delete('/:reservationId',
     authenticate,
