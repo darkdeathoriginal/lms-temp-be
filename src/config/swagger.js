@@ -89,6 +89,39 @@ const options = {
           description: "Page number for pagination",
           schema: { type: "integer", default: 1 },
         },
+        Admin:{
+            type: "object",
+            properties: {  library_name:{
+                type: "string",
+                description: "Name of the library",
+            }, name:{
+                type: "string",
+                description: "Name of the user",
+            }, email:{
+                type: "string",
+                description: "Email of the user",
+            }, jwt:{
+                type: "string",
+                description: "JWT token for authentication",
+            }, library_address:{
+                type: "string",
+                description: "Address of the library",
+            }, library_city:{
+                type: "string",
+                description: "City of the library",
+            }, library_state:{
+                type: "string",
+                description: "State of the library",
+            }, library_country:{
+                type: "string",
+                description: "Country of the library",
+            }, phone_number:{
+                type: "string",
+                description: "Phone number of the user",
+            }, gender:{
+                type: "string",
+            }},
+        },
         // --- Add Schemas for your Models ---
         Library: {
           type: "object",

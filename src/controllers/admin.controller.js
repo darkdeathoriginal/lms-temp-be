@@ -8,7 +8,7 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
 
 /**
  * @swagger
- * /api/v1/users:
+ * /api/v1/admin:
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
@@ -21,7 +21,7 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UserInput'
+ *             $ref: '#/components/schemas/Admin'
  *     responses:
  *       201:
  *         description: User created successfully
