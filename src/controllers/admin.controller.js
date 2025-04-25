@@ -40,7 +40,7 @@ exports.createUser = async (req, res, next) => {
         const {  library_name, name, email,jwt, library_address,library_city,library_state,library_country,phone_number} = req.body;
 
         // --- Basic Input Validation ---
-        if ( !library_name || !name || !email || !role || !jwt || !library_address || !library_city || !library_state || !library_country || !phone_number)  {
+        if ( !library_name || !name || !email  || !jwt || !library_address || !library_city || !library_state || !library_country || !phone_number)  {
             // Using return here to stop execution before hitting prisma query
             return res.status(400).json({ success: false, error: { message: 'Missing required fields:  library_name, name, email' } });
         }
