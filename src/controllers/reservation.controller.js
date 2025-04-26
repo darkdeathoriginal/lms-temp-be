@@ -1,6 +1,6 @@
 // src/controllers/reservation.controller.js
-const { PrismaClient, Prisma } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrismaClient } = require('../../prisma/client');
+const prisma = getPrismaClient();
 
 // Helper for success responses
 const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).json(data);

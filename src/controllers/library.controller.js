@@ -1,6 +1,6 @@
 // src/controllers/library.controller.js
-const { PrismaClient, Prisma } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrismaClient } = require('../../prisma/client');
+const prisma = getPrismaClient();
 
 // Helper function for common responses (optional)
 const handleNotFound = (res, entity = 'Resource') => res.status(404).json({ success: false, error: { message: `${entity} not found.` } });

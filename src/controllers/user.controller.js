@@ -1,6 +1,6 @@
 // src/controllers/user.controller.js
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrismaClient } = require('../../prisma/client');
+const prisma = getPrismaClient();
 
 // Helper for success responses (optional)
 const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).json(data);
@@ -96,6 +96,8 @@ exports.createUser = async (req, res, next) => {
  *   get:
  *     summary: Retrieve a list of users
  *     tags: [Users]
+ *     security: # --- Add Security Requirement ---
+ *       - bearerAuth: []
  *     description: Fetches a paginated list of users with filtering and sorting options.
  *     parameters:
  *       - in: query
@@ -211,6 +213,8 @@ exports.getAllUsers = async (req, res, next) => {
  *   get:
  *     summary: Retrieve a single user by ID
  *     tags: [Users]
+*     security: # --- Add Security Requirement ---
+ *       - bearerAuth: []
  *     description: Fetches the details of a specific user using their unique ID.
  *     parameters:
  *       - name: id
@@ -247,6 +251,8 @@ exports.getUserById = async (req, res, next) => {
  *   put:
  *     summary: Update a user by ID
  *     tags: [Users]
+ *     security: # --- Add Security Requirement ---
+ *       - bearerAuth: []
  *     description: Updates details for an existing user. `user_id` cannot be changed. Array fields like `borrowed_book_ids` are typically managed by dedicated borrow/return endpoints.
  *     parameters:
  *       - name: id
@@ -331,6 +337,8 @@ exports.updateUser = async (req, res, next) => {
  *   delete:
  *     summary: Delete a user by ID
  *     tags: [Users]
+ *     security: # --- Add Security Requirement ---
+ *       - bearerAuth: []
  *     description: Permanently deletes a user record. Consider implementing soft delete (setting `is_active` to false) instead for data retention. Associated records (borrows, reviews etc.) might be deleted due to CASCADE rules in the schema.
  *     parameters:
  *       - name: id

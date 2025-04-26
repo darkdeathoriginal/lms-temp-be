@@ -1,7 +1,7 @@
 // src/middleware/auth.middleware.js
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrismaClient } = require('../../prisma/client');
+const prisma = getPrismaClient();
 
 const handleAuthError = (res, message, statusCode = 401) => {
     return res.status(statusCode).json({ success: false, error: { message } });
@@ -13,6 +13,7 @@ const handleAuthError = (res, message, statusCode = 401) => {
  */
 const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+    console.log("Auth Header:", req.headers);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return handleAuthError(res, 'Unauthorized: No token provided or invalid format.');
@@ -27,6 +28,7 @@ const authenticate = async (req, res, next) => {
         
 
         // --- Optional but Recommended: Check if user still exists and is active ---
+        
         const user = await prisma.user.findUnique({
             where: { user_id: decoded.sub },
             select: { user_id: true, role: true, is_active: true } // Select only needed fields
@@ -52,6 +54,8 @@ const authenticate = async (req, res, next) => {
         next(); // Proceed to the next middleware or route handler
 
     } catch (error) {
+        console.log(error);
+        
         if (error instanceof jwt.TokenExpiredError) {
             return handleAuthError(res, 'Unauthorized: Token has expired.');
         }
