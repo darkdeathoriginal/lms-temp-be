@@ -29,25 +29,13 @@ const authenticate = async (req, res, next) => {
 
         // --- Optional but Recommended: Check if user still exists and is active ---
         
-        const user = await prisma.user.findUnique({
-            where: { user_id: decoded.sub },
-            select: { user_id: true, role: true, is_active: true } // Select only needed fields
-        });
-
-        if (!user) {
-            return handleAuthError(res, 'Unauthorized: User not found.');
-        }
-
-        if (!user.is_active) {
-            return handleAuthError(res, 'Unauthorized: User account is inactive.', 403); // Or 401
-        }
         // --- End Optional Check ---
 
         // Attach user info to the request object
         // Ensure the payload structure matches what your login function creates
         req.user = {
-            id: user.user_id, // Use the validated ID from DB
-            role: user.role,   // Use the validated role from DB
+            id: decoded.sub, // Use the validated ID from DB
+            role: decoded.role,   // Use the validated role from DB
             // Add other relevant non-sensitive info if needed
         };
 
