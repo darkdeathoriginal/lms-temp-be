@@ -117,11 +117,11 @@ model Book {
 
 model Policy {
   policy_id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  library_id              String   @db.Uuid
-  max_borrow_days         Int      // Add check constraints in application logic
-  fine_per_day            Decimal  @db.Decimal(6, 2) // Add check constraints in application logic
-  max_books_per_user      Int      // Add check constraints in application logic
-  reservation_expiry_days Int      // Add check constraints in application logic
+  library_id              String   @unique @db.Uuid // <<< ADD @unique HERE
+  max_borrow_days         Int
+  fine_per_day            Decimal  @db.Decimal(6, 2)
+  max_books_per_user      Int
+  reservation_expiry_days Int
   created_at              DateTime @default(now()) @db.Timestamptz(6)
   updated_at              DateTime @updatedAt @db.Timestamptz(6)
 

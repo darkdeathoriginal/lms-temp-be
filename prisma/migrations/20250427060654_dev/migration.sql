@@ -199,6 +199,9 @@ CREATE UNIQUE INDEX "genres_name_key" ON "genres"("name");
 CREATE UNIQUE INDEX "books_isbn_key" ON "books"("isbn");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "policies_library_id_key" ON "policies"("library_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "wishlists_user_id_book_id_key" ON "wishlists"("user_id", "book_id");
 
 -- CreateIndex
