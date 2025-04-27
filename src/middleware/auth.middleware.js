@@ -35,7 +35,7 @@ const authenticate = async (req, res, next) => {
         // Ensure the payload structure matches what your login function creates
         req.user = {
             id: decoded.sub, // Use the validated ID from DB
-            role: decoded.role,   // Use the validated role from DB
+            role: decoded.app_metadata.role,   // Use the validated role from DB
             // Add other relevant non-sensitive info if needed
         };
 

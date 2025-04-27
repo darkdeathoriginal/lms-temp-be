@@ -234,6 +234,8 @@ exports.getAllUsers = async (req, res, next) => {
 exports.getUserById = async (req, res, next) => {
     try {
         const { id } = req.params;
+        console.log(`Fetching user with ID: ${id}`);
+        
         // Use findUniqueOrThrow for concise handling of not found cases
         const user = await prisma.user.findUniqueOrThrow({
              where: { user_id: id }
