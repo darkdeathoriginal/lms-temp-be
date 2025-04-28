@@ -4,20 +4,21 @@ const otpGenerator = require('otp-generator');
 // Log email configuration (without password)
 console.log('Email Configuration:', {
     user: process.env.EMAIL_USER,
-    host: 'smtp.gmail.com',
+    host: 'smtp.mail.me.com',
     port: 587
 });
 
 // Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'smtp.mail.me.com',
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false, // Use STARTTLS
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+        user: process.env.EMAIL_USER, // Should be your full iCloud email address
+        pass: process.env.EMAIL_PASSWORD // Should be an app-specific password
     },
     tls: {
+        ciphers: 'SSLv3',
         rejectUnauthorized: false
     }
 });
@@ -139,7 +140,7 @@ const generateOTP = async (req, res) => {
 
         // Send OTP via email
         const mailOptions = {
-            from: `"Library Management System" <${process.env.EMAIL_USER}>`,
+            from: `"ShelfSpace" <${process.env.CUSTOM_EMAIL_ICLOUD}>`,
             to: email,
             subject: 'Your OTP for 2FA Verification',
             html: `
