@@ -25,10 +25,10 @@ const authenticate = async (req, res, next) => {
         // Verify the token using the secret key
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log(decoded);
-        
+
 
         // --- Optional but Recommended: Check if user still exists and is active ---
-        
+
         // --- End Optional Check ---
 
         // Attach user info to the request object
@@ -43,7 +43,7 @@ const authenticate = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        
+
         if (error instanceof jwt.TokenExpiredError) {
             return handleAuthError(res, 'Unauthorized: Token has expired.');
         }
