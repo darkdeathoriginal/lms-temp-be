@@ -1,4 +1,5 @@
 // src/controllers/wishlist.controller.js
+const { Prisma } = require('@prisma/client');
 const { getPrismaClient } = require('../../prisma/client');
 const prisma = getPrismaClient();
 
