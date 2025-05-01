@@ -1,6 +1,8 @@
 // src/controllers/user.controller.js
 const { getPrismaClient } = require('../../prisma/client');
+const { transporter } = require('../utils/mailHandler');
 const prisma = getPrismaClient();
+const { supabase } = require('../utils/supabaseClient'); // Assuming you have a Supabase client setup
 
 // Helper for success responses (optional)
 const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).json(data);
@@ -11,6 +13,8 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
+ *     security: # --- Add Security Requirement ---
+ *       - bearerAuth: []
  *     description: >
  *       Creates a new user record. The `user_id` **must** be provided and should typically
  *       correspond to an ID from an external authentication system (e.g., Supabase Auth, Firebase Auth).
@@ -36,7 +40,7 @@ const handleSuccess = (res, data, statusCode = 200) => res.status(statusCode).js
  */
 exports.createUser = async (req, res, next) => {
     try {
-        const { user_id, library_id, name, email, role, } = req.body;
+        let { user_id, library_id, name, email, role, } = req.body;
 
         // --- Basic Input Validation ---
         if (!user_id || !library_id || !name || !email || !role) {
@@ -54,6 +58,48 @@ exports.createUser = async (req, res, next) => {
         });
         if (!libraryExists) {
              return res.status(400).json({ success: false, error: { message: `Referenced library with ID ${library_id} not found.` } });
+        }
+        if(req.body.password){            
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: req.body.password,
+            })
+            if (error) {
+                console.error('Error creating user in Supabase:', error);
+                return res.status(400).json({ success: false, error: { message: 'Error creating user in Supabase.' } });
+            }
+            if (data.user) {
+                user_id = data.user.id;
+                const library = await prisma.library.findUnique({
+                    where: { library_id: library_id },
+                    select: { library_id: true, name: true }
+                });
+                if (!library) {
+                    return res.status(400).json({ success: false, error: { message: `Referenced library with ID ${library_id} not found.` } });
+                }
+                const mailOptions = {
+                    from: `"ShelfSpace" <${process.env.CUSTOM_EMAIL_ICLOUD}>`,
+                    to: email,
+                    subject: 'Your Account Verification',
+                    html: `
+                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h1>Welcome to ShelfSpace!</h1>
+                        <p>Dear ${name},</p>
+                        <p>Your account has been created successfully. Please verify your email address to activate your account.</p>
+                        <p>Library: ${library.name}</p>
+                        <p>Email: ${email}</p>
+                        <p>Password: ${req.body.password}</p>
+                        <p>Thank you for joining us!</p>
+                        <p>Best regards,</p>
+                        <p>The ShelfSpace Team</p>
+                         </div>
+                    `
+                };
+        
+                await transporter.sendMail(mailOptions)
+            } else {
+                return res.status(400).json({ success: false, error: { message: 'Error creating user in Supabase.' } });
+            }
         }
 
         // --- Attempt to create user ---
