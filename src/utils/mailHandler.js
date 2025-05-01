@@ -9,7 +9,7 @@ console.log('Email Configuration:', {
 });
 
 // Create a transporter for sending emails
-export const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     host: 'smtp.mail.me.com',
     port: 587,
     secure: false, // Use STARTTLS
@@ -22,3 +22,7 @@ export const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 });
+
+module.exports = {
+    transporter
+}
