@@ -92,7 +92,7 @@ model Book {
   book_id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   library_id       String              @db.Uuid
   title            String
-  isbn             String?             @unique
+  isbn             String?             
   description      String?
   total_copies     Int                 @default(1) // Add check constraints in application logic if needed
   available_copies Int                 @default(1) // Add check constraints in application logic if needed
