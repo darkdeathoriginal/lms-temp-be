@@ -155,6 +155,8 @@ exports.removeFromWishlist = async (req, res, next) => {
              });
              if (user) {
                  const updatedWishlistIds = user.wishlist_book_ids.filter(id => id !== bookId);
+                 console.log(`Updated wishlist IDs: ${updatedWishlistIds}`); // Debugging log
+                 
                  await tx.user.update({
                      where: { user_id: userId },
                      data: { wishlist_book_ids: updatedWishlistIds }
@@ -209,8 +211,9 @@ exports.getMyWishlist = async (req, res, next) => {
                             title: true,
                             description: true,
                             available_copies: true, // Show availability
-                            // author_ids: true, // Maybe fetch author names requires another step
-                            // genre_ids: true,
+                             author_ids: true, // Maybe fetch author names requires another step
+                             genre_ids: true,
+                             cover_image_url: true
                         }
                     }
                 }
