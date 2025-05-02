@@ -179,21 +179,61 @@ exports.getAllBooks = async (req, res, next) => {
         }
 
         // --- Database Query ---
-        const [books, totalBooks] = await prisma.$transaction([
+        const [booksData, totalBooks] = await prisma.$transaction([
             prisma.book.findMany({
                 where,
                 skip,
                 take: limit,
                 orderBy: { [sortBy]: sortOrder },
-                // Optional: Include related data if needed frequently, but be mindful of performance
-                // include: { library: { select: { name: true } } }
+                // REMOVED the include for author here
             }),
-            prisma.book.count({ where }) // Count based on the same filters
+            prisma.book.count({ where })
         ]);
-
+        
+        // 2. Extract all unique author IDs from the results
+        const allAuthorIds = booksData.reduce((ids, book) => {
+            book.author_ids.forEach(id => ids.add(id));
+            return ids;
+        }, new Set()); // Use a Set to get unique IDs automatically
+        
+        const uniqueAuthorIds = Array.from(allAuthorIds); // Convert Set back to Array
+        
+        // 3. Fetch the corresponding authors IF there are any IDs
+        let authorsMap = {}; // Use a map for easy lookup: { authorId: name }
+        if (uniqueAuthorIds.length > 0) {
+            const authors = await prisma.author.findMany({
+                where: {
+                    author_id: {
+                        in: uniqueAuthorIds
+                    }
+                },
+                select: {
+                    author_id: true,
+                    name: true
+                }
+            });
+            // Create the lookup map
+            authors.forEach(author => {
+                authorsMap[author.author_id] = author.name;
+            });
+        }
+        
+        // 4. Map author names onto the book data (Modify the response structure)
+        const booksWithAuthorNames = booksData.map(book => {
+            return {
+                ...book, // Spread existing book properties
+                // Add a new field, e.g., 'authorNames'
+                authorNames: book.author_ids.map(id => authorsMap[id] || 'Unknown Author').filter(name => name !== 'Unknown Author'), // Map IDs to names, handle missing authors
+                // Or replace author_ids if you prefer
+                // authors: book.author_ids.map(id => ({ id: id, name: authorsMap[id] || 'Unknown Author' })).filter(a => a.name !== 'Unknown Author')
+            };
+        });
+        
+        
         // --- Response ---
         handleSuccess(res, {
-            data: books,
+            // Send the modified data
+            data: booksWithAuthorNames,
             pagination: {
                 totalItems: totalBooks,
                 currentPage: page,
@@ -201,6 +241,7 @@ exports.getAllBooks = async (req, res, next) => {
                 totalPages: Math.ceil(totalBooks / limit)
             }
         });
+        
     } catch (error) {
          // Handle potential errors from invalid query params (e.g., non-UUID format for IDs)
          // Prisma might throw validation errors for invalid UUID formats
