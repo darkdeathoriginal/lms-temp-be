@@ -213,7 +213,12 @@ exports.getMyWishlist = async (req, res, next) => {
                             available_copies: true, // Show availability
                              author_ids: true, // Maybe fetch author names requires another step
                              genre_ids: true,
-                             cover_image_url: true
+                             cover_image_url: true,
+                             total_copies: true,
+                             available_copies: true,
+                             reserved_copies: true,
+                             author_ids: true,
+                             library_id: true,
                         }
                     }
                 }
