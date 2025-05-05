@@ -18,9 +18,9 @@ router.get('/:id', authenticate, userController.getUserById);
 
 // PUT /api/v1/users/:id - Admin can update any, Member can update self (Requires logic)
 // Simple approach: Allow Admin only for general updates
-router.put('/:id', authenticate, isAdmin, userController.updateUser);
+router.put('/:id', authenticate, isAdminOrLibrarian, userController.updateUser);
 
 // DELETE /api/v1/users/:id - Admin Only
-router.delete('/:id', authenticate, isAdmin, userController.deleteUser);
+router.delete('/:id', authenticate, isAdminOrLibrarian, userController.deleteUser);
 
 module.exports = router;
