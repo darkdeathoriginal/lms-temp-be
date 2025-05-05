@@ -382,7 +382,22 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
                 orderBy: { [sortBy]: sortOrder },
                 include: { // Include basic user/book info for context
                     user: { select: { user_id: true, name: true, email: true } },
-                    book: { select: { book_id: true, title: true } }
+                    book: {
+                        select: {
+                            book_id: true,
+                            title: true,
+                            description: true,
+                            available_copies: true, // Show availability
+                             author_ids: true, // Maybe fetch author names requires another step
+                             genre_ids: true,
+                             cover_image_url: true,
+                             total_copies: true,
+                             available_copies: true,
+                             reserved_copies: true,
+                             author_ids: true,
+                             library_id: true,
+                        }
+                    }
                 }
             }),
             prisma.borrowTransaction.count({ where })
