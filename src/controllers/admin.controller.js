@@ -63,7 +63,7 @@ exports.createUser = async (req, res, next) => {
                 library_id: newLibrary.library_id,
                 max_borrow_days: 14,
                 fine_per_day: 1,
-                max_book_per_user: 4,
+                max_books_per_user: 4,
                 reservation_expiry_days: 1,
             },
         });
