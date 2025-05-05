@@ -358,7 +358,7 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
         const where = {};
 
         // RBAC Filtering: Members can only see their own transactions
-        if (requestingUserRole === 'Member') {
+        if (requestingUserRole === 'member') {
             where.user_id = requestingUserId;
              // Prevent member from overriding filter to see others' transactions
              if (userId && userId !== requestingUserId) {
