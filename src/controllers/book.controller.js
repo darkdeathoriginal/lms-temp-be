@@ -116,7 +116,7 @@ exports.createBook = async (req, res, next) => {
             await checkRelatedEntities(tx, { library_id, author_ids, genre_ids });
 
             // 3. Create the book within the same transaction
-            const newBook = await tx.book.create({
+            let newBook = await tx.book.create({
                 data: {
                     ...bookData,
                     library_id,
@@ -138,6 +138,11 @@ exports.createBook = async (req, res, next) => {
                     }
                 });
             }
+            const authorNames = await tx.author.findMany({
+                where: { author_id: { in: author_ids } },   
+                select: { name: true }
+            });
+            newBook.authorNames = authorNames; // Add author names to the response if needed
 
             // 5. Send success response *after* transaction commits
             handleSuccess(res, newBook, 201);
