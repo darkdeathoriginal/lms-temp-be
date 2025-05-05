@@ -539,6 +539,29 @@ const options = {
           },
         },
       },
+      parameters:{
+        PageQueryParam:{
+          name: "page",
+          in: "query",
+          required: false,
+          description: "Page number for pagination",
+          schema: { type: "integer", default: 1 },
+        },
+        LimitQueryParam:{
+          name: "limit",
+          in: "query",
+          required: false,
+          description: "Number of items per page",
+          schema: { type: "integer", default: 10 },
+        },
+        SortOrderQueryParam:{
+          name: "sortOrder",
+          in: "query",
+          required: false,
+          description: "Sort order (asc or desc)",
+          schema: { type: "string", default: "asc", enum: ["asc", "desc"] },
+        }
+      }
     },
     // Path to the API docs files (controllers and maybe routes)
     apis: ["./src/controllers/*.js", "./src/routes/*.js"], // Point to files with JSDoc comments
