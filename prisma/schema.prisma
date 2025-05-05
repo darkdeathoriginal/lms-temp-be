@@ -28,6 +28,7 @@ model Library {
   books             Book[]
   policies          Policy[]
   fines             Fine[]
+  borrow_transactions BorrowTransaction[]
   document_uploads DocumentUpload[]
 
   @@map("libraries")
@@ -134,12 +135,14 @@ model BorrowTransaction {
   borrow_id   String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id     String        @db.Uuid
   book_id     String        @db.Uuid
+  library_id  String        @db.Uuid
   borrow_date DateTime      @default(now()) @db.Timestamptz(6)
   return_date DateTime?     @db.Timestamptz(6)
   status      BorrowStatus @default(borrowed)
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   book Book @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  library Library @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   fine Fine? // A borrow transaction might result in one fine
 
   @@map("borrow_transactions")

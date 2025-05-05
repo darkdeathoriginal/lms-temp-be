@@ -176,10 +176,13 @@ exports.borrowBook = async (req, res, next) => {
                 data: {
                     user_id: userId,
                     book_id: bookId,
-                    status: 'requested', // Initial status
+                    library_id: user.library_id, // <<<<<<<<<<<<<< ADD library_id HERE
+                    status: 'borrowed',    // Set status to 'borrowed' (or your default)
                     // borrow_date defaults to now() via schema
                 }
             });
+
+
 
             return borrowRecord; // Return the created transaction
 
@@ -372,6 +375,12 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
         if (bookId) where.book_id = bookId;
         if (status) where.status = status;
         // TODO: Add filtering by libraryId (requires joining/including library info or adding library_id to transaction)
+
+        const user = await prisma.user.findUnique({
+            where: { user_id: requestingUserId },
+            select: { library_id: true }
+        });
+        where.library_id = user.library_id; // Ensure all transactions are from the same library as the user
 
         // --- Database Query ---
         const [transactions, totalTransactions] = await prisma.$transaction([
