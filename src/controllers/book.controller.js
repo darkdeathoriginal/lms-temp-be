@@ -73,7 +73,7 @@ const checkRelatedEntities = async (tx, { library_id, author_ids = [], genre_ids
  */
 exports.createBook = async (req, res, next) => {
     try {
-        const { library_id, title, author_ids = [], genre_ids = [],isbn, ...bookData } = req.body;
+        const { library_id, title, author_ids = [], genre_ids = [], ...bookData } = req.body;
 
         // 1. Basic Input Validation
         if (!library_id || !title) {
@@ -98,7 +98,7 @@ exports.createBook = async (req, res, next) => {
 
         if (isbn) { // Check only if an ISBN was actually sent in the request
             const existingBookWithISBN = await prisma.book.findFirst({
-                where: { isbn: isbn,library_id }, // Assumes isbn field has @unique constraint in schema
+                where: { isbn: req.body.isbn,library_id }, // Assumes isbn field has @unique constraint in schema
                 select: { book_id: true } // Only need to know if it exists
             });
 
