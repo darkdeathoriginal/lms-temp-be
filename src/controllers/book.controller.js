@@ -94,7 +94,7 @@ exports.createBook = async (req, res, next) => {
         }
 
         if (isbn) { // Check only if an ISBN was actually sent in the request
-            const existingBookWithISBN = await prisma.book.findUnique({
+            const existingBookWithISBN = await prisma.book.findFirst({
                 where: { isbn: isbn }, // Assumes isbn field has @unique constraint in schema
                 select: { book_id: true } // Only need to know if it exists
             });
