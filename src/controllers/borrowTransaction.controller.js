@@ -177,7 +177,7 @@ exports.borrowBook = async (req, res, next) => {
                     user_id: userId,
                     book_id: bookId,
                     library_id: user.library_id, // <<<<<<<<<<<<<< ADD library_id HERE
-                    status: 'borrowed',    // Set status to 'borrowed' (or your default)
+                    status: 'requested',    // Set status to 'borrowed' (or your default)
                     // borrow_date defaults to now() via schema
                 }
             });
