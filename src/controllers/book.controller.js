@@ -73,7 +73,7 @@ const checkRelatedEntities = async (tx, { library_id, author_ids = [], genre_ids
  */
 exports.createBook = async (req, res, next) => {
     try {
-        const { library_id, title, author_ids = [], genre_ids = [], ...bookData } = req.body;
+        const { library_id, title, author_ids = [], genre_ids = [],isbn, ...bookData } = req.body;
 
         // 1. Basic Input Validation
         if (!library_id || !title) {
@@ -93,6 +93,20 @@ exports.createBook = async (req, res, next) => {
             return res.status(400).json({ success: false, error: { message: 'Sum of available and reserved copies cannot exceed total copies.' } });
         }
 
+        if (isbn) { // Check only if an ISBN was actually sent in the request
+            const existingBookWithISBN = await prisma.book.findUnique({
+                where: { isbn: isbn }, // Assumes isbn field has @unique constraint in schema
+                select: { book_id: true } // Only need to know if it exists
+            });
+
+            if (existingBookWithISBN) {
+                // ISBN exists, return a 409 Conflict error immediately
+                return res.status(409).json({
+                    success: false,
+                    error: { message: `A book with ISBN ${isbn} already exists.` }
+                });
+            }
+        }
 
         // 2. Check Related Entities within a Transaction
         await prisma.$transaction(async (tx) => {
