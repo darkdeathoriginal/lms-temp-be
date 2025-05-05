@@ -79,7 +79,7 @@ exports.createBook = async (req, res, next) => {
         if (!library_id || !title) {
              return res.status(400).json({ success: false, error: { message: 'Missing required fields: library_id, title' } });
         }
-        if(req.body.genre_names || req.body.genre_names.length < 1){
+        if(!req.body.genre_names || req.body.genre_names.length < 1){
             return res.status(400).json({ success: false, error: { message: 'At least one genre name is required.' } });
         }
         // Validate counts based on input data (no current data yet)
