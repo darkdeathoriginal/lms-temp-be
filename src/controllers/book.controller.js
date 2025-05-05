@@ -144,7 +144,7 @@ exports.createBook = async (req, res, next) => {
             });
             console.log(authorNames);
             
-            newBook.authorNames = authorNames; // Add author names to the response if needed
+            newBook.authorNames = authorNames.map(author => author.name); // Add author names to the new book object
 
             // 5. Send success response *after* transaction commits
             handleSuccess(res, newBook, 201);
