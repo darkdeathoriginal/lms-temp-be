@@ -142,6 +142,8 @@ exports.createBook = async (req, res, next) => {
                 where: { author_id: { in: author_ids } },   
                 select: { name: true }
             });
+            console.log(authorNames);
+            
             newBook.authorNames = authorNames; // Add author names to the response if needed
 
             // 5. Send success response *after* transaction commits
