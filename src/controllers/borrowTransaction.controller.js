@@ -99,8 +99,8 @@ exports.borrowBook = async (req, res, next) => {
                     select: { book_id: true, library_id: true, available_copies: true, reserved_copies: true }
                 }),
                  // Check if this user has an active reservation for this book
-                 tx.reservation.findUnique({
-                     where: { user_id_book_id: { user_id: userId, book_id: bookId } }
+                 tx.reservation.findFirst({
+                     where: { user_id:userId, book_id: bookId },
                  })
             ]);
 
@@ -192,6 +192,8 @@ exports.borrowBook = async (req, res, next) => {
 
     } catch (error) {
          // Handle specific errors thrown within the transaction
+         console.error('Error during borrow transaction:', error); // Log the error for debugging
+         
          if (error instanceof Error && (error.message.includes('borrowed this book') || error.message.includes('borrowing limit') || error.message.includes('not available') || error.message.includes('different libraries') || error.message.includes('reserved copies available'))) {
             return res.status(400).json({ success: false, error: { message: error.message } });
          }
