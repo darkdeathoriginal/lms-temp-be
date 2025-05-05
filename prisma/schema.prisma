@@ -247,6 +247,7 @@ enum RoleType {
 }
 
 enum BorrowStatus {
+  requested
   borrowed
   returned
   overdue

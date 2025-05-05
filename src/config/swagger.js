@@ -254,7 +254,7 @@ const options = {
             },
             status: {
               type: "string",
-              enum: ["borrowed", "returned", "overdue"],
+              enum: ["borrowed", "returned", "overdue","requested"],
             },
           },
         },
@@ -442,7 +442,7 @@ const options = {
             book_id: { type: "string", format: "uuid" },
             status: {
               type: "string",
-              enum: ["borrowed", "returned", "overdue"],
+              enum: ["borrowed", "returned", "overdue", "requested"],
             }, // Usually set by logic, not direct input
             return_date: { type: "string", format: "date-time" }, // Usually set by return logic
           },

@@ -87,7 +87,7 @@ router.put('/:borrowId/return',
  *         description: Filter by Book ID.
  *       - name: status
  *         in: query
- *         schema: { type: string, enum: [borrowed, returned, overdue] }
+ *         schema: { type: string, enum: [borrowed, returned, overdue,requested] }
  *         description: Filter by transaction status.
  *       # - name: libraryId # Add if filtering by library is implemented
  *       #   in: query
@@ -130,5 +130,30 @@ router.get('/:borrowId',
 );
 
 // DELETE endpoint is intentionally omitted as transactions are typically kept for history.
+/**
+ * @swagger
+ * /api/v1/borrow-transactions/{borrowId}/cancel:
+ *   delete:
+ *     summary: Cancel an active borrow transaction (Member own, Librarian, Admin)
+ *     tags: [Borrow Transactions]
+ *     description: Deletes a borrow transaction record *before* it is returned (status must be 'borrowed'). Restores book availability and user borrow slot.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - { $ref: '#/components/parameters/BorrowIdPathParam' }
+ *     responses:
+ *       204: { description: 'Borrow transaction cancelled successfully (No Content)' }
+ *       400: { description: 'Bad Request - Transaction not in borrowed state or member trying to cancel wrong transaction.', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+ *       401: { $ref: '#/components/schemas/UnauthorizedResponse' }
+ *       403: { $ref: '#/components/schemas/ForbiddenResponse' }
+ *       404: { description: 'Not Found - Borrow transaction not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+ *       500: { $ref: '#/components/responses/ServerErrorResponse' }
+ */
+router.delete('/:borrowId/cancel',
+    authenticate,
+    authorize(['member', 'librarian', 'admin']), // Allow these roles
+    // Ownership check for 'Member' happens inside the controller
+    borrowTransactionController.cancelBorrow
+);
 
 module.exports = router;

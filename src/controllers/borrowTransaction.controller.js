@@ -176,7 +176,7 @@ exports.borrowBook = async (req, res, next) => {
                 data: {
                     user_id: userId,
                     book_id: bookId,
-                    status: 'borrowed',
+                    status: 'requested', // Initial status
                     // borrow_date defaults to now() via schema
                 }
             });
@@ -440,5 +440,97 @@ exports.getBorrowTransactionById = async (req, res, next) => {
     } catch (error) {
         // P2025 (NotFound) handled by global handler
         next(error);
+    }
+};
+
+/**
+ * @method cancelBorrow
+ * @description Cancels an active borrow transaction (status='borrowed'). Restores book availability and user borrow slot.
+ * @route DELETE /api/v1/borrow-transactions/{borrowId}/cancel
+ * @access Member (own), Librarian, Admin
+ * @tag Borrow Transactions
+ */
+exports.cancelBorrow = async (req, res, next) => {
+    const { borrowId } = req.params;
+    const requestingUserId = req.user.id;
+    const requestingUserRole = req.user.role;
+
+    try {
+        await prisma.$transaction(async (tx) => {
+            // 1. Fetch the transaction to check status and ownership
+            const transaction = await tx.borrowTransaction.findUniqueOrThrow({
+                where: { borrow_id: borrowId },
+                select: {
+                    borrow_id: true,
+                    user_id: true,
+                    book_id: true,
+                    status: true,
+                    // Include user's borrowed_book_ids for update logic
+                    user: { select: { user_id: true, borrowed_book_ids: true } }
+                }
+            });
+
+            // 2. Authorization Check: Member can only cancel their own
+            if (requestingUserRole === 'member' && transaction.user_id !== requestingUserId) {
+                throw new Error(`Forbidden: You can only cancel your own borrow requests.`);
+            }
+            // Admins/Librarians can proceed
+
+            // 3. Validation: Only cancel if status is 'borrowed'
+            if (transaction.status !== 'requested') {
+                throw new Error(`Cannot cancel transaction: Status is already '${transaction.status}'. Only 'requested' transactions can be cancelled.`);
+            }
+
+            // 4. Delete the Borrow Transaction record
+            await tx.borrowTransaction.delete({
+                where: { borrow_id: transaction.borrow_id }
+            });
+
+            // 5. Update Book Availability: Increment available copies
+            // Note: We assume cancelling a borrow always returns the book to the 'available' pool.
+            // If it was borrowed from a reservation, this logic might need refinement depending on desired behavior.
+            // For simplicity, we just increment available_copies.
+            await tx.book.update({
+                where: { book_id: transaction.book_id },
+                data: {
+                    available_copies: { increment: 1 }
+                    // Do not decrement reserved_copies here unless specific logic requires it.
+                }
+            });
+
+            // 6. Update User's borrowed list: Remove the book ID
+            if (transaction.user) { // Check if user data was successfully fetched
+                const updatedBorrowedIds = transaction.user.borrowed_book_ids.filter(id => id !== transaction.book_id);
+                await tx.user.update({
+                    where: { user_id: transaction.user_id },
+                    data: {
+                        borrowed_book_ids: updatedBorrowedIds
+                    }
+                });
+            } else {
+                // Should not happen if transaction was found, but log a warning
+                 console.warn(`User data not found for user ${transaction.user_id} during borrow cancellation ${transaction.borrow_id}. Skipping user update.`);
+            }
+
+            // No specific data to return on successful deletion
+
+        }, { // Transaction options
+            maxWait: 10000,
+            timeout: 20000,
+        }); // End transaction
+
+        res.status(204).send(); // No content on successful cancellation/deletion
+
+    } catch (error) {
+        // Handle specific errors thrown within the transaction
+        if (error instanceof Error && (error.message.includes('Forbidden') || error.message.includes('Cannot cancel transaction'))) {
+           return res.status(400).json({ success: false, error: { message: error.message } });
+        }
+         // Handle Not Found errors for transaction
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+             const entity = error.meta?.modelName || error.meta?.cause || 'Borrow transaction';
+             return res.status(404).json({ success: false, error: { message: `${entity} not found.` } });
+        }
+       next(error);
     }
 };
