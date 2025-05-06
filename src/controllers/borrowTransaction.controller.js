@@ -232,7 +232,7 @@ exports.returnBook = async (req, res, next) => {
             });
 
             // 2. Authorization check: Member can only return their own, Librarian can return any
-            if (requestingUserRole === 'Member' && transaction.user_id !== requestingUserId) {
+            if (requestingUserRole === 'member' && transaction.user_id !== requestingUserId) {
                  throw new Error(`Forbidden: You can only return your own borrowed books.`); // Custom forbidden error
             }
             // Optional: Add check if Librarian belongs to the same library as the transaction
