@@ -32,7 +32,7 @@ const router = express.Router();
  */
 router.post('/',
     authenticate,
-    isMember, // Only Members can create reservations for themselves
+    authorize(['member', 'librarian']), // Only Members can create reservations for themselves
     reservationController.createReservation
 );
 
