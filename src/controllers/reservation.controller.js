@@ -94,6 +94,7 @@ exports.createReservation = async (req, res, next) => {
                     book_id: bookId,
                     reserved_at: reservedAt,
                     expires_at: expiresAt,
+                    library_id: user.library_id // Ensure library_id is set
                 }
             });
 
@@ -171,7 +172,7 @@ exports.getAllReservations = async (req, res, next) => {
         const where = {};
 
         // RBAC Filtering: Members can only see their own
-        if (requestingUserRole === 'Member') {
+        if (requestingUserRole === 'member') {
             where.user_id = requestingUserId;
              // Prevent member from overriding filter
              if (userId && userId !== requestingUserId) {
@@ -185,6 +186,11 @@ exports.getAllReservations = async (req, res, next) => {
         if (bookId) where.book_id = bookId;
         if (expired === 'true') where.expires_at = { lt: new Date() };
         if (expired === 'false') where.expires_at = { gte: new Date() };
+        const user = await prisma.user.findUnique({
+            where: { user_id: requestingUserId },
+            select: { library_id: true }
+        });
+        where.library_id = user.library_id; // Ensure all transactions are from the same library as the user
 
         // --- Database Query ---
         const [reservations, totalReservations] = await prisma.$transaction([
@@ -195,7 +201,20 @@ exports.getAllReservations = async (req, res, next) => {
                 orderBy: { [sortBy]: sortOrder },
                 include: { // Include basic user/book info for context
                     user: { select: { user_id: true, name: true, email: true } },
-                    book: { select: { book_id: true, title: true } }
+                    book: {
+                        select: {
+                            book_id: true,
+                            title: true,
+                            description: true,
+                             genre_ids: true,
+                             cover_image_url: true,
+                             total_copies: true,
+                             available_copies: true,
+                             reserved_copies: true,
+                             author_ids: true,
+                             library_id: true,
+                        }
+                    }
                 }
             }),
             prisma.reservation.count({ where })
@@ -276,7 +295,7 @@ exports.deleteReservation = async (req, res, next) => {
             });
 
             // 2. Authorization check: Member can only delete their own
-            if (requestingUserRole === 'Member' && reservation.user_id !== requestingUserId) {
+            if (requestingUserRole === 'member' && reservation.user_id !== requestingUserId) {
                  throw new Error(`Forbidden: You can only cancel your own reservations.`); // Custom error for transaction rollback
             }
 

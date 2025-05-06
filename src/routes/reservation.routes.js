@@ -122,7 +122,7 @@ router.get('/:reservationId',
  */
 router.delete('/:reservationId',
     authenticate,
-    authorize(['Member', 'Librarian', 'Admin']), // Allow multiple roles
+    authorize(['member', 'librarian', 'admin']), // Allow multiple roles
     // Ownership check for 'Member' happens inside the controller
     reservationController.deleteReservation
 );
