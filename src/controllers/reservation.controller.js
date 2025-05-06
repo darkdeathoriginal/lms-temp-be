@@ -213,6 +213,7 @@ exports.getAllReservations = async (req, res, next) => {
                              reserved_copies: true,
                              author_ids: true,
                              library_id: true,
+                             isbn: true,
                         }
                     }
                 }
