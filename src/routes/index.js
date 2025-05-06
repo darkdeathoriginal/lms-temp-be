@@ -14,6 +14,7 @@ const wishlistRoutes = require('./wishlist.routes');
 const reviewRoutes = require('./review.routes');
 const adminRoutes = require('./admin.routes');
 const otpRoutes = require('./otp.routes');
+const analyticsRoutes = require('./analytics.routes');
 // const ticketRoutes = require('./ticket.routes');
 // const fineRoutes = require('./fine.routes');
 // const documentUploadRoutes = require('./documentUpload.routes');
@@ -65,6 +66,7 @@ router.use(`${API_PREFIX}/wishlists`, wishlistRoutes);
 router.use(`${API_PREFIX}/reviews`, reviewRoutes);
 router.use(`${API_PREFIX}/admin`, adminRoutes);
 router.use(`${API_PREFIX}/otp`, otpRoutes);
+router.use(`${API_PREFIX}/analytics`, analyticsRoutes);
 // router.use(`${API_PREFIX}/tickets`, ticketRoutes);
 // router.use(`${API_PREFIX}/fines`, fineRoutes);
 // router.use(`${API_PREFIX}/document-uploads`, documentUploadRoutes);
@@ -103,6 +105,8 @@ router.use(`${API_PREFIX}/otp`, otpRoutes);
  *     description: API health status check
  *   - name: OTP
  *     description: Two-factor authentication using OTP
+ *   - name: Analytics
+ *     description: Library analytics and statistics
  */
 
 module.exports = router;
