@@ -79,8 +79,7 @@ const calculateOverdueDays = (borrowDate, returnDate, maxBorrowDays) => {
  * @tag Borrow Transactions
  */
 exports.borrowBook = async (req, res, next) => {
-    const userId = req.user.id; // Get user ID from authenticated user
-    const { bookId } = req.body;
+    const { bookId,userId } = req.body;
 
     if (!bookId) {
         return res.status(400).json({ success: false, error: { message: 'bookId is required.' } });
