@@ -220,6 +220,13 @@ exports.getAllReservations = async (req, res, next) => {
             }),
             prisma.reservation.count({ where })
         ]);
+        await prisma.book.update({
+            where: { book_id: bookId },
+            data: {
+                available_copies: { decrement: 1}, // Decrement available only if NOT borrowing a reserved copy
+                reserved_copies: { increment: 1 }, // Decrement reserved if borrowing reserved copy
+            }
+        });
 
         // --- Response ---
         handleSuccess(res, {
