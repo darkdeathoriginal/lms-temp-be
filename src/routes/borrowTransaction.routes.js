@@ -56,7 +56,7 @@ router.post('/',
  */
 router.put('/:borrowId/return',
     authenticate,
-    authorize(['Member', 'Librarian']), // Allow both Members and Librarians
+    authorize(['member', 'librarian']), // Allow both Members and Librarians
     borrowTransactionController.returnBook
 );
 
