@@ -31,7 +31,7 @@ const router = express.Router();
  */
 router.post('/',
     authenticate,
-    isMember, // Only members can initiate a borrow for themselves via this endpoint
+    authorize(['member', 'librarian']), // Only members can initiate a borrow for themselves via this endpoint
     borrowTransactionController.borrowBook
 );
 
