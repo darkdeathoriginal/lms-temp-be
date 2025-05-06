@@ -102,9 +102,13 @@ exports.createReservation = async (req, res, next) => {
             await tx.book.update({
                 where: { book_id: bookId },
                 data: {
-                    reserved_copies: { increment: 1 }
+                    reserved_copies: { increment: 1 },
+                    available_copies: { decrement: 1}, // Decrement available only if NOT borrowing a reserved copy
+
+                    
                 }
             });
+
 
             // 6. Update User: Add to reserved_book_ids array
             await tx.user.update({
@@ -220,13 +224,6 @@ exports.getAllReservations = async (req, res, next) => {
             }),
             prisma.reservation.count({ where })
         ]);
-        await prisma.book.update({
-            where: { book_id: bookId },
-            data: {
-                available_copies: { decrement: 1}, // Decrement available only if NOT borrowing a reserved copy
-                reserved_copies: { increment: 1 }, // Decrement reserved if borrowing reserved copy
-            }
-        });
 
         // --- Response ---
         handleSuccess(res, {
