@@ -5,10 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-
 }
 
 // Enable UUID extension - Prisma handles this implicitly when using @default(dbgenerated("gen_random_uuid()"))
@@ -16,40 +15,40 @@ datasource db {
 // Connect to psql and run: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 model Library {
-  library_id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name              String
-  address           String?
-  city              String?
-  state             String?
-  country           String?
-  created_at        DateTime           @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime           @updatedAt @db.Timestamptz(6)
-  users             User[]
-  books             Book[]
-  policies          Policy[]
-  fines             Fine[]
+  library_id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String
+  address             String?
+  city                String?
+  state               String?
+  country             String?
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @updatedAt @db.Timestamptz(6)
+  users               User[]
+  books               Book[]
+  policies            Policy[]
+  fines               Fine[]
   borrow_transactions BorrowTransaction[]
-  document_uploads DocumentUpload[]
+  document_uploads    DocumentUpload[]
 
   @@map("libraries")
 }
 
 model User {
-  user_id           String              @id @db.Uuid // Assuming this links to an external auth system (like Supabase Auth)
-  library_id        String              @db.Uuid
+  user_id           String   @id @db.Uuid // Assuming this links to an external auth system (like Supabase Auth)
+  library_id        String   @db.Uuid
   name              String
-  email             String              @unique
+  email             String   @unique
   role              RoleType
-  is_active         Boolean             @default(true)
-  borrowed_book_ids String[]            @default([]) @db.Uuid
-  reserved_book_ids String[]            @default([]) @db.Uuid
-  wishlist_book_ids String[]            @default([]) @db.Uuid
-  created_at        DateTime            @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime            @updatedAt @db.Timestamptz(6)
+  is_active         Boolean  @default(true)
+  borrowed_book_ids String[] @default([]) @db.Uuid
+  reserved_book_ids String[] @default([]) @db.Uuid
+  wishlist_book_ids String[] @default([]) @db.Uuid
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @updatedAt @db.Timestamptz(6)
   age               Int?
   phone_number      String?
-  interests          String[]            @default([]) 
-  gender          String?
+  interests         String[] @default([])
+  gender            String?
 
   library             Library?            @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]
@@ -90,21 +89,21 @@ model Author {
 }
 
 model Book {
-  book_id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  library_id       String              @db.Uuid
-  title            String
-  isbn             String?             
-  description      String?
-  total_copies     Int                 @default(1) // Add check constraints in application logic if needed
-  available_copies Int                 @default(1) // Add check constraints in application logic if needed
-  reserved_copies  Int                 @default(0) // Add check constraints in application logic if needed
-  author_ids       String[]            @default([]) @db.Uuid // Holds IDs of authors for this book
-  genre_ids        String[]            @default([]) @db.Uuid // Holds IDs of genres for this book
-  published_date   DateTime?           @db.Timestamptz(6)
-  added_on         DateTime            @default(now()) @db.Timestamptz(6)
-  updated_at       DateTime            @updatedAt @db.Timestamptz(6)
-  cover_image_url   String?
-  genre_names      String[]            @db.Text
+  book_id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  library_id          String              @db.Uuid
+  title               String
+  isbn                String?
+  description         String?
+  total_copies        Int                 @default(1) // Add check constraints in application logic if needed
+  available_copies    Int                 @default(1) // Add check constraints in application logic if needed
+  reserved_copies     Int                 @default(0) // Add check constraints in application logic if needed
+  author_ids          String[]            @default([]) @db.Uuid // Holds IDs of authors for this book
+  genre_ids           String[]            @default([]) @db.Uuid // Holds IDs of genres for this book
+  published_date      DateTime?           @db.Timestamptz(6)
+  added_on            DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @updatedAt @db.Timestamptz(6)
+  cover_image_url     String?
+  genre_names         String[]            @db.Text
   library             Library             @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
   borrow_transactions BorrowTransaction[]
   reservations        Reservation[]
@@ -132,27 +131,27 @@ model Policy {
 }
 
 model BorrowTransaction {
-  borrow_id   String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id     String        @db.Uuid
-  book_id     String        @db.Uuid
-  library_id  String        @db.Uuid
-  borrow_date DateTime      @default(now()) @db.Timestamptz(6)
-  return_date DateTime?     @db.Timestamptz(6)
+  borrow_id   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String       @db.Uuid
+  book_id     String       @db.Uuid
+  library_id  String       @db.Uuid
+  borrow_date DateTime     @default(now()) @db.Timestamptz(6)
+  return_date DateTime?    @db.Timestamptz(6)
   status      BorrowStatus @default(borrowed)
 
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  book Book @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  book    Book    @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
   library Library @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
-  fine Fine? // A borrow transaction might result in one fine
+  fine    Fine? // A borrow transaction might result in one fine
 
   @@map("borrow_transactions")
 }
 
 model Reservation {
-  reservation_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id        String   @db.Uuid
-  book_id        String   @db.Uuid
-  reserved_at    DateTime @default(now()) @db.Timestamptz(6)
+  reservation_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String    @db.Uuid
+  book_id        String    @db.Uuid
+  reserved_at    DateTime  @default(now()) @db.Timestamptz(6)
   expires_at     DateTime? @db.Timestamptz(6)
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -178,7 +177,7 @@ model Review {
   review_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id     String   @db.Uuid
   book_id     String   @db.Uuid
-  rating      Int?     // Add check constraints in application logic
+  rating      Int? // Add check constraints in application logic
   comment     String?
   reviewed_at DateTime @default(now()) @db.Timestamptz(6)
 
@@ -189,18 +188,18 @@ model Review {
 }
 
 model Ticket {
-  ticket_id  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String       @db.Uuid
+  ticket_id   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String       @db.Uuid
   resolved_by String?      @db.Uuid
-  type       String
-  subject    String
-  message    String
-  status     TicketStatus @default(open)
-  created_at DateTime     @default(now()) @db.Timestamptz(6)
-  updated_at DateTime     @updatedAt @db.Timestamptz(6)
+  type        String
+  subject     String
+  message     String
+  status      TicketStatus @default(open)
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime     @updatedAt @db.Timestamptz(6)
 
-  user       User  @relation("CreatedTickets", fields: [user_id], references: [user_id], onDelete: Cascade)
-  resolver   User? @relation("ResolvedTickets", fields: [resolved_by], references: [user_id])
+  user     User  @relation("CreatedTickets", fields: [user_id], references: [user_id], onDelete: Cascade)
+  resolver User? @relation("ResolvedTickets", fields: [resolved_by], references: [user_id])
 
   @@map("tickets")
 }
@@ -226,20 +225,34 @@ model Fine {
 }
 
 model DocumentUpload {
-  upload_id  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String   @db.Uuid
-  book_id    String?  @db.Uuid
-  library_id String   @db.Uuid
-  file_url   String
-  file_type  String?
+  upload_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  book_id     String?  @db.Uuid
+  library_id  String   @db.Uuid
+  file_url    String
+  file_type   String?
   uploaded_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at  DateTime @updatedAt @db.Timestamptz(6)
 
-  user    User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  book    Book?    @relation(fields: [book_id], references: [book_id], onDelete: SetNull)
-  library Library  @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  book    Book?   @relation(fields: [book_id], references: [book_id], onDelete: SetNull)
+  library Library @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
 
   @@map("document_uploads")
+}
+
+model OTPVerification {
+  id        String   @id @default(uuid())
+  email     String
+  otp       String
+  expiresat DateTime
+  isused    Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+
+  @@index([email])
+  @@map("otpverification")
 }
 
 // --- Enums ---
