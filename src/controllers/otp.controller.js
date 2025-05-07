@@ -1,38 +1,16 @@
 const { transporter } = require("../utils/mailHandler");
+const { getPrismaClient } = require('../../prisma/client');
+const prisma = getPrismaClient();
 
-
-
-// In-memory storage for OTPs
-const otpStore = new Map();
+const OTP_LENGTH = 6;
+const OTP_EXPIRY_MINUTES = 5;
+const MAX_ATTEMPTS = 5;
 
 /**
  * Generate a 6-digit numeric OTP
  */
 const generateNumericOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-/**
- * Check if user has exceeded rate limit
- */
-const checkRateLimit = (email) => {
-    const now = Date.now();
-    const userLimit = otpStore.get(`limit_${email}`) || { count: 0, timestamp: now };
-
-    // Reset count if more than 1 hour has passed
-    if (now - userLimit.timestamp > 3600000) {
-        userLimit.count = 0;
-        userLimit.timestamp = now;
-    }
-
-    // Check if user has exceeded 5 attempts per hour
-    if (userLimit.count >= 5) {
-        return false;
-    }
-
-    userLimit.count++;
-    otpStore.set(`limit_${email}`, userLimit);
-    return true;
 };
 
 /**
@@ -86,8 +64,39 @@ const generateOTP = async (req, res) => {
             });
         }
 
-        // Check rate limit
-        if (!checkRateLimit(email)) {
+        // Clean up old/expired OTPs for this email
+        try {
+            await prisma.oTPVerification.deleteMany({
+                where: {
+                    email,
+                    OR: [
+                        { isused: true },
+                        { expiresat: { lt: new Date() } }
+                    ]
+                }
+            });
+        } catch (deleteError) {
+            console.error('Error during deleteMany operation:', deleteError);
+            // Continue with the function instead of returning early
+        }
+
+        // Check for recent OTPs (rate limit: 5 per hour)
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        let recentCount = 0;
+
+        try {
+            recentCount = await prisma.oTPVerification.count({
+                where: {
+                    email,
+                    createdat: { gte: oneHourAgo }
+                }
+            });
+        } catch (countError) {
+            console.error('Error during count operation:', countError);
+            // Continue with function instead of returning early
+        }
+
+        if (recentCount >= MAX_ATTEMPTS) {
             return res.status(429).json({
                 success: false,
                 error: { message: 'Too many OTP requests. Please try again later.' }
@@ -96,17 +105,29 @@ const generateOTP = async (req, res) => {
 
         // Generate a 6-digit numeric OTP
         const otp = generateNumericOTP();
+        const expiresat = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
-        // Set OTP expiry to 5 minutes from now
-        const expiresAt = new Date();
-        expiresAt.setMinutes(expiresAt.getMinutes() + 5);
-
-        // Store OTP in memory
-        otpStore.set(email, {
-            otp,
-            expiresAt,
-            isUsed: false
-        });
+        // Store OTP in DB
+        try {
+            await prisma.oTPVerification.create({
+                data: {
+                    email,
+                    otp,
+                    expiresat,
+                    isused: false,
+                    attempts: 0
+                }
+            });
+        } catch (createError) {
+            console.error('Error during OTP creation:', createError);
+            return res.status(500).json({
+                success: false,
+                error: {
+                    message: 'Failed to create OTP record',
+                    details: createError.message
+                }
+            });
+        }
 
         // Send OTP via email
         const mailOptions = {
@@ -205,31 +226,36 @@ const verifyOTP = async (req, res) => {
             });
         }
 
-        // Get stored OTP
-        const storedOTP = otpStore.get(email);
+        // Get the latest unused, unexpired OTP for this email
+        const otpRecord = await prisma.oTPVerification.findFirst({
+            where: {
+                email,
+                isused: false,
+                expiresat: { gt: new Date() }
+            },
+            orderBy: { createdat: 'desc' }
+        });
 
-        if (!storedOTP) {
+        if (!otpRecord) {
             return res.status(400).json({
                 success: false,
-                error: { message: 'No OTP found for this email' }
+                error: { message: 'No valid OTP found for this email' }
             });
         }
 
-        if (storedOTP.isUsed) {
-            return res.status(400).json({
+        if (otpRecord.attempts >= MAX_ATTEMPTS) {
+            return res.status(429).json({
                 success: false,
-                error: { message: 'OTP has already been used' }
+                error: { message: 'Too many invalid attempts. Please request a new OTP.' }
             });
         }
 
-        if (new Date() > storedOTP.expiresAt) {
-            return res.status(400).json({
-                success: false,
-                error: { message: 'OTP has expired' }
+        if (otpRecord.otp !== otp) {
+            // Increment attempts
+            await prisma.oTPVerification.update({
+                where: { id: otpRecord.id },
+                data: { attempts: { increment: 1 } }
             });
-        }
-
-        if (storedOTP.otp !== otp) {
             return res.status(400).json({
                 success: false,
                 error: { message: 'Invalid OTP' }
@@ -237,8 +263,10 @@ const verifyOTP = async (req, res) => {
         }
 
         // Mark OTP as used
-        storedOTP.isUsed = true;
-        otpStore.set(email, storedOTP);
+        await prisma.oTPVerification.update({
+            where: { id: otpRecord.id },
+            data: { isused: true }
+        });
 
         res.status(200).json({
             success: true,
@@ -256,4 +284,4 @@ const verifyOTP = async (req, res) => {
 module.exports = {
     generateOTP,
     verifyOTP
-}; 
+};
