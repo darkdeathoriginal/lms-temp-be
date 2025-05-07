@@ -79,8 +79,7 @@ const calculateOverdueDays = (borrowDate, returnDate, maxBorrowDays) => {
  * @tag Borrow Transactions
  */
 exports.borrowBook = async (req, res, next) => {
-    const userId = req.user.id; // Get user ID from authenticated user
-    const { bookId } = req.body;
+    const { bookId,userId } = req.body;
 
     if (!bookId) {
         return res.status(400).json({ success: false, error: { message: 'bookId is required.' } });
@@ -177,7 +176,7 @@ exports.borrowBook = async (req, res, next) => {
                     user_id: userId,
                     book_id: bookId,
                     library_id: user.library_id, // <<<<<<<<<<<<<< ADD library_id HERE
-                    status: 'requested',    // Set status to 'borrowed' (or your default)
+                    status: 'borrowed',    // Set status to 'borrowed' (or your default)
                     // borrow_date defaults to now() via schema
                 }
             });
@@ -233,7 +232,7 @@ exports.returnBook = async (req, res, next) => {
             });
 
             // 2. Authorization check: Member can only return their own, Librarian can return any
-            if (requestingUserRole === 'Member' && transaction.user_id !== requestingUserId) {
+            if (requestingUserRole === 'member' && transaction.user_id !== requestingUserId) {
                  throw new Error(`Forbidden: You can only return your own borrowed books.`); // Custom forbidden error
             }
             // Optional: Add check if Librarian belongs to the same library as the transaction
@@ -405,16 +404,57 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
                              reserved_copies: true,
                              author_ids: true,
                              library_id: true,
+                             isbn: true,
                         }
                     }
                 }
             }),
             prisma.borrowTransaction.count({ where })
         ]);
+        const allAuthorIds = transactions.reduce((ids, e) => {
+            e.book.author_ids.forEach(id => ids.add(id));
+            return ids;
+        }, new Set()); // Use a Set to get unique IDs automatically
+        
+        const uniqueAuthorIds = Array.from(allAuthorIds); // Convert Set back to Array
+        
+        // 3. Fetch the corresponding authors IF there are any IDs
+        let authorsMap = {}; // Use a map for easy lookup: { authorId: name }
+        if (uniqueAuthorIds.length > 0) {
+            const authors = await prisma.author.findMany({
+                where: {
+                    author_id: {
+                        in: uniqueAuthorIds
+                    }
+                },
+                select: {
+                    author_id: true,
+                    name: true
+                }
+            });
+            // Create the lookup map
+            authors.forEach(author => {
+                authorsMap[author.author_id] = author.name;
+            });
+        }
+        
+        // 4. Map author names onto the book data (Modify the response structure)
+        const booksWithAuthorNames = transactions.map(e => {
+            return {
+                ...e, // Spread existing book properties
+                // Add a new field, e.g., 'authorNames'
+                book:{
+                    ...e.book, // Spread existing book properties
+                    authorNames: e.book.author_ids.map(id => authorsMap[id] || 'Unknown Author').filter(name => name !== 'Unknown Author'), // Map IDs to names, handle missing authors
+                }
+                // Or replace author_ids if you prefer
+                // authors: book.author_ids.map(id => ({ id: id, name: authorsMap[id] || 'Unknown Author' })).filter(a => a.name !== 'Unknown Author')
+            };
+        });
 
         // --- Response ---
         handleSuccess(res, {
-            data: transactions,
+            data: booksWithAuthorNames,
             pagination: {
                 totalItems: totalTransactions,
                 currentPage: page,
