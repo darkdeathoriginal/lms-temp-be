@@ -16,6 +16,9 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER, // Should be your full iCloud email address
         pass: process.env.EMAIL_PASSWORD // Should be an app-specific password
     },
+    connectionTimeout: 10000,  // 10 seconds connection timeout
+    greetingTimeout: 10000,    // 10 seconds for EHLO/HELO handshake
+    socketTimeout: 15000,      // 15 seconds socket timeout
     tls: {
         ciphers: 'SSLv3',
         rejectUnauthorized: false
