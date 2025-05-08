@@ -31,7 +31,7 @@ const router = express.Router();
  */
 router.post('/',
     authenticate,
-    isMember, // Only members can initiate a borrow for themselves via this endpoint
+    authorize(['member', 'librarian']), // Only members can initiate a borrow for themselves via this endpoint
     borrowTransactionController.borrowBook
 );
 
@@ -56,7 +56,7 @@ router.post('/',
  */
 router.put('/:borrowId/return',
     authenticate,
-    authorize(['Member', 'Librarian']), // Allow both Members and Librarians
+    authorize(['member', 'librarian']), // Allow both Members and Librarians
     borrowTransactionController.returnBook
 );
 

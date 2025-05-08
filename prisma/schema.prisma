@@ -28,7 +28,8 @@ model Library {
   policies            Policy[]
   fines               Fine[]
   borrow_transactions BorrowTransaction[]
-  document_uploads    DocumentUpload[]
+  reservations        Reservation[]
+  document_uploads DocumentUpload[]
 
   @@map("libraries")
 }
@@ -153,9 +154,13 @@ model Reservation {
   book_id        String    @db.Uuid
   reserved_at    DateTime  @default(now()) @db.Timestamptz(6)
   expires_at     DateTime? @db.Timestamptz(6)
+  library_id  String        @db.Uuid
+
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   book Book @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  library Library @relation(fields: [library_id], references: [library_id], onDelete: Cascade)
+
 
   @@map("reservations")
 }

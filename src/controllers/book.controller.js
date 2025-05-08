@@ -96,7 +96,7 @@ exports.createBook = async (req, res, next) => {
             return res.status(400).json({ success: false, error: { message: 'Sum of available and reserved copies cannot exceed total copies.' } });
         }
 
-        if (isbn) { // Check only if an ISBN was actually sent in the request
+        if (req.body.isbn) { // Check only if an ISBN was actually sent in the request
             const existingBookWithISBN = await prisma.book.findFirst({
                 where: { isbn: req.body.isbn,library_id }, // Assumes isbn field has @unique constraint in schema
                 select: { book_id: true } // Only need to know if it exists
@@ -106,7 +106,7 @@ exports.createBook = async (req, res, next) => {
                 // ISBN exists, return a 409 Conflict error immediately
                 return res.status(409).json({
                     success: false,
-                    error: { message: `A book with ISBN ${isbn} already exists.` }
+                    error: { message: `A book with ISBN ${req.body.isbn} already exists.` }
                 });
             }
         }
