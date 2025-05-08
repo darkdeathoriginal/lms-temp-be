@@ -95,35 +95,46 @@ exports.createUser = async (req, res, next) => {
             to: email,
             subject: 'Your Library Administrator Account Created',
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
-                    <h2 style="color: #333;">Welcome to ${library_name}!</h2>
-                    <p>Hello ${name},</p>
-                    <p>Your library administrator account has been successfully created. Here are your account details:</p>
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                        <p><strong>Name:</strong> ${name}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Phone Number:</strong> ${phone_number || 'Not provided'}</p>
-                        <p><strong>Role:</strong> Administrator</p>
-                    </div>
-                    <h3>Library Details:</h3>
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                        <p><strong>Library Name:</strong> ${library_name}</p>
-                        <p><strong>Address:</strong> ${library_address}</p>
-                        <p><strong>City:</strong> ${library_city}</p>
-                        <p><strong>State:</strong> ${library_state}</p>
-                        <p><strong>Country:</strong> ${library_country}</p>
-                    </div>
-                    <h3>Default Library Policies:</h3>
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                        <p><strong>Maximum Borrowing Period:</strong> ${newPolicy.max_borrow_days} days</p>
-                        <p><strong>Fine Per Day (Late Return):</strong> $${newPolicy.fine_per_day}</p>
-                        <p><strong>Maximum Books Per User:</strong> ${newPolicy.max_books_per_user}</p>
-                        <p><strong>Reservation Expiry:</strong> ${newPolicy.reservation_expiry_days} day(s)</p>
-                    </div>
-                    <p>You now have full administrative access to manage your library's digital system. You can modify these policies at any time through the admin dashboard.</p>
-                    <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
-                    <p>Best regards,<br>ShelfSpace Team</p>
-                </div>
+<div style="font-family: 'Segoe UI', Tahoma, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 151, 168, 0.15);">
+  
+  <h2 style="color: #0097a8; border-bottom: 2px solid #80d3fa; padding-bottom: 10px; margin-bottom: 25px;">Welcome to ${library_name}!</h2>
+
+  <p style="color: #212121; font-size: 16px;">Hello <strong>${name}</strong>,</p>
+
+  <p style="color: #212121; font-size: 16px;">Your library administrator account has been successfully created. Here are your details:</p>
+
+  <div style="background-color: #e6f8fb; padding: 20px; border-left: 5px solid #0097a8; border-radius: 8px; margin: 20px 0;">
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Phone Number:</strong> ${phone_number || 'Not provided'}</p>
+    <p><strong>Role:</strong> Administrator</p>
+  </div>
+
+  <h3 style="color: #2c7be2; margin-top: 30px;">Library Details</h3>
+  <div style="background-color: #e8f1fd; padding: 20px; border-left: 5px solid #2c7be2; border-radius: 8px; margin: 15px 0;">
+    <p><strong>Library Name:</strong> ${library_name}</p>
+    <p><strong>Address:</strong> ${library_address}</p>
+    <p><strong>City:</strong> ${library_city}</p>
+    <p><strong>State:</strong> ${library_state}</p>
+    <p><strong>Country:</strong> ${library_country}</p>
+  </div>
+
+  <h3 style="color: #0097a8; margin-top: 30px;">Default Library Policies</h3>
+  <div style="background-color: #dff7fb; padding: 20px; border-left: 5px solid #0097a8; border-radius: 8px; margin: 15px 0;">
+    <p><strong>Maximum Borrowing Period:</strong> ${newPolicy.max_borrow_days} days</p>
+    <p><strong>Fine Per Day (Late Return):</strong> ${newPolicy.fine_per_day}</p>
+    <p><strong>Maximum Books Per User:</strong> ${newPolicy.max_books_per_user}</p>
+    <p><strong>Reservation Expiry:</strong> ${newPolicy.reservation_expiry_days} day(s)</p>
+  </div>
+
+  <p style="color: #212121; font-size: 16px;">You now have full administrative access to manage your library's digital system. You can update these policies anytime via the admin dashboard.</p>
+
+  <p style="color: #212121; font-size: 16px;">If you need help, feel free to contact our support team at any time.</p>
+
+  <p style="margin-top: 30px; color: #2c7be2;"><strong>– The ShelfSpace Team</strong></p>
+</div>
+
+
             `
         };
 
