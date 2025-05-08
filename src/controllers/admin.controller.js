@@ -91,7 +91,7 @@ exports.createUser = async (req, res, next) => {
 
         // Send confirmation email to the new admin
         const mailOptions = {
-            from: `"ShelfSpace" <${process.env.EMAIL_USER}>`,
+            from: `"ShelfSpace" <${process.env.CUSTOM_EMAIL_ICLOUD}>`,
             to: email,
             subject: 'Your Library Administrator Account Created',
             html: `
@@ -127,14 +127,13 @@ exports.createUser = async (req, res, next) => {
             `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending admin confirmation email:', error);
-                // Continue with the response even if email fails
-            } else {
-                console.log('Admin confirmation email sent:', info.response);
-            }
-        });
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Admin confirmation email sent successfully');
+        } catch (emailError) {
+            console.error('Error sending admin confirmation email:', emailError);
+            // Log detailed error but continue with the response
+        }
 
         handleSuccess(res, { user: newUser, library: newLibrary }, 201);
 
