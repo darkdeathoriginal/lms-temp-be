@@ -20,6 +20,10 @@ const options = {
         url: `https://lms-temp-be.vercel.app`, // Production URL
         description: "Production server",
       },
+      {
+        url: `http://52.168.132.52:8080`, // Swagger UI URL
+        description: "Azure",
+      }
     ],
     components: {
       // Define reusable schemas here to avoid repetition in controllers
