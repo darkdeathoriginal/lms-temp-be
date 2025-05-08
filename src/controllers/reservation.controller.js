@@ -297,6 +297,9 @@ exports.deleteReservation = async (req, res, next) => {
                 data: {
                     reserved_copies: {
                         decrement: 1
+                    },
+                    available_copies:{
+                        increment: 1
                     }
                 },
                 // Add a condition to prevent decrementing below zero if needed,
