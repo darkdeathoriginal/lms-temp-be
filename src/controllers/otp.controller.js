@@ -14,6 +14,33 @@ const generateNumericOTP = () => {
 };
 
 /**
+ * Send OTP email asynchronously without waiting for response
+ */
+const sendOTPEmail = async (email, otp) => {
+    const mailOptions = {
+        from: `"ShelfSpace" <${process.env.CUSTOM_EMAIL_ICLOUD}>`,
+        to: email,
+        subject: 'Your OTP for 2FA Verification',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">OTP Verification</h2>
+                <p>Your OTP for verification is:</p>
+                <div style="background-color: #f4f4f4; padding: 10px; border-radius: 5px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
+                    ${otp}
+                </div>
+                <p>This OTP will expire in 5 minutes.</p>
+                <p style="color: #666; font-size: 12px;">If you didn't request this OTP, please ignore this email.</p>
+            </div>
+        `
+    };
+
+    // Fire and forget - don't await or catch errors here
+    transporter.sendMail(mailOptions)
+        .then(() => console.log('OTP email sent successfully to:', email))
+        .catch(error => console.error('Error sending OTP email:', error));
+};
+
+/**
  * @swagger
  * /api/v1/otp/generate:
  *   post:
@@ -54,107 +81,49 @@ const generateNumericOTP = () => {
  *         description: Server error
  */
 const generateOTP = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ success: false, error: 'Email is required' });
+    }
+
     try {
-        const { email } = req.body;
+        const otp = generateNumericOTP();
+        const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                error: { message: 'Email is required' }
-            });
-        }
-
-        // Clean up old/expired OTPs for this email
-        try {
-            await prisma.oTPVerification.deleteMany({
-                where: {
-                    email,
-                    OR: [
-                        { isused: true },
-                        { expiresat: { lt: new Date() } }
-                    ]
-                }
-            });
-        } catch (deleteError) {
-            console.error('Error during deleteMany operation:', deleteError);
-            // Continue with the function instead of returning early
-        }
-
-        // Check for recent OTPs (rate limit: 5 per hour)
-        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-        let recentCount = 0;
-
-        try {
-            recentCount = await prisma.oTPVerification.count({
-                where: {
-                    email,
-                    createdat: { gte: oneHourAgo }
-                }
-            });
-        } catch (countError) {
-            console.error('Error during count operation:', countError);
-            // Continue with function instead of returning early
-        }
+        // Simplified transaction - only check rate limit and create new OTP
+        const recentCount = await prisma.oTPVerification.count({
+            where: {
+                email,
+                createdat: { gte: new Date(Date.now() - 60 * 60 * 1000) },
+                isused: false,
+                expiresat: { gt: new Date() }
+            }
+        });
 
         if (recentCount >= MAX_ATTEMPTS) {
             return res.status(429).json({
                 success: false,
-                error: { message: 'Too many OTP requests. Please try again later.' }
+                error: 'Too many OTP requests'
             });
         }
 
-        // Generate a 6-digit numeric OTP
-        const otp = generateNumericOTP();
-        const expiresat = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
+        // Create new OTP without waiting for completion
+        prisma.oTPVerification.create({
+            data: { email, otp, expiresat: expiresAt }
+        }).catch(console.error);
 
-        // Store OTP in DB
-        try {
-            await prisma.oTPVerification.create({
-                data: {
-                    email,
-                    otp,
-                    expiresat,
-                    isused: false,
-                    attempts: 0
-                }
-            });
-        } catch (createError) {
-            console.error('Error during OTP creation:', createError);
-            return res.status(500).json({
-                success: false,
-                error: {
-                    message: 'Failed to create OTP record',
-                    details: createError.message
-                }
-            });
-        }
+        // Send email without waiting
+        sendOTPEmail(email, otp);
 
-        // Send OTP via email
-        const mailOptions = {
-            from: `"ShelfSpace" <${process.env.CUSTOM_EMAIL_ICLOUD}>`,
-            to: email,
-            subject: 'Your OTP for 2FA Verification',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #333;">OTP Verification</h2>
-                    <p>Your OTP for verification is:</p>
-                    <div style="background-color: #f4f4f4; padding: 10px; border-radius: 5px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
-                        ${otp}
-                    </div>
-                    <p>This OTP will expire in 5 minutes.</p>
-                    <p style="color: #666; font-size: 12px;">If you didn't request this OTP, please ignore this email.</p>
-                </div>
-            `
-        };
-
-        await transporter.sendMail(mailOptions);
-
+        // Immediate response
         res.status(200).json({
             success: true,
             message: 'OTP sent successfully'
         });
+
     } catch (error) {
-        console.error('Error generating OTP:', error);
+        console.error('OTP generation error:', error);
         res.status(500).json({
             success: false,
             error: {
@@ -208,30 +177,19 @@ const generateOTP = async (req, res) => {
  *         description: Server error
  */
 const verifyOTP = async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp || !/^\d{6}$/.test(otp)) {
+        return res.status(400).json({ success: false });
+    }
+
     try {
-        const { email, otp } = req.body;
-
-        if (!email || !otp) {
-            return res.status(400).json({
-                success: false,
-                error: { message: 'Email and OTP are required' }
-            });
-        }
-
-        // Validate OTP format
-        if (!/^\d{6}$/.test(otp)) {
-            return res.status(400).json({
-                success: false,
-                error: { message: 'OTP must be a 6-digit number' }
-            });
-        }
-
-        // Get the latest unused, unexpired OTP for this email
         const otpRecord = await prisma.oTPVerification.findFirst({
             where: {
                 email,
                 isused: false,
-                expiresat: { gt: new Date() }
+                expiresat: { gt: new Date() },
+                attempts: { lt: MAX_ATTEMPTS }
             },
             orderBy: { createdat: 'desc' }
         });
@@ -243,15 +201,7 @@ const verifyOTP = async (req, res) => {
             });
         }
 
-        if (otpRecord.attempts >= MAX_ATTEMPTS) {
-            return res.status(429).json({
-                success: false,
-                error: { message: 'Too many invalid attempts. Please request a new OTP.' }
-            });
-        }
-
         if (otpRecord.otp !== otp) {
-            // Increment attempts
             await prisma.oTPVerification.update({
                 where: { id: otpRecord.id },
                 data: { attempts: { increment: 1 } }
@@ -262,24 +212,27 @@ const verifyOTP = async (req, res) => {
             });
         }
 
-        // Mark OTP as used
-        await prisma.oTPVerification.update({
+        // Mark as used without waiting
+        prisma.oTPVerification.update({
             where: { id: otpRecord.id },
             data: { isused: true }
-        });
+        }).catch(console.error);
 
         res.status(200).json({
             success: true,
             message: 'OTP verified successfully'
         });
+
     } catch (error) {
-        console.error('Error verifying OTP:', error);
+        console.error('OTP verification error:', error);
         res.status(500).json({
             success: false,
             error: { message: 'Failed to verify OTP' }
         });
     }
 };
+
+module.exports = { generateOTP, verifyOTP };
 
 module.exports = {
     generateOTP,
