@@ -375,11 +375,15 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
         if (status) where.status = status;
         // TODO: Add filtering by libraryId (requires joining/including library info or adding library_id to transaction)
 
+        if(libraryId) {
+            where.library_id = libraryId;
+        }else{
         const user = await prisma.user.findUnique({
             where: { user_id: requestingUserId },
             select: { library_id: true }
         });
         where.library_id = user.library_id; // Ensure all transactions are from the same library as the user
+    }
 
         // --- Database Query ---
         const [transactions, totalTransactions] = await prisma.$transaction([
@@ -388,73 +392,13 @@ exports.getAllBorrowTransactions = async (req, res, next) => {
                 skip,
                 take: limit,
                 orderBy: { [sortBy]: sortOrder },
-                include: { // Include basic user/book info for context
-                    user: { select: { user_id: true, name: true, email: true } },
-                    book: {
-                        select: {
-                            book_id: true,
-                            title: true,
-                            description: true,
-                            available_copies: true, // Show availability
-                             author_ids: true, // Maybe fetch author names requires another step
-                             genre_ids: true,
-                             cover_image_url: true,
-                             total_copies: true,
-                             available_copies: true,
-                             reserved_copies: true,
-                             author_ids: true,
-                             library_id: true,
-                             isbn: true,
-                        }
-                    }
-                }
             }),
             prisma.borrowTransaction.count({ where })
         ]);
-        const allAuthorIds = transactions.reduce((ids, e) => {
-            e.book.author_ids.forEach(id => ids.add(id));
-            return ids;
-        }, new Set()); // Use a Set to get unique IDs automatically
-        
-        const uniqueAuthorIds = Array.from(allAuthorIds); // Convert Set back to Array
-        
-        // 3. Fetch the corresponding authors IF there are any IDs
-        let authorsMap = {}; // Use a map for easy lookup: { authorId: name }
-        if (uniqueAuthorIds.length > 0) {
-            const authors = await prisma.author.findMany({
-                where: {
-                    author_id: {
-                        in: uniqueAuthorIds
-                    }
-                },
-                select: {
-                    author_id: true,
-                    name: true
-                }
-            });
-            // Create the lookup map
-            authors.forEach(author => {
-                authorsMap[author.author_id] = author.name;
-            });
-        }
-        
-        // 4. Map author names onto the book data (Modify the response structure)
-        const booksWithAuthorNames = transactions.map(e => {
-            return {
-                ...e, // Spread existing book properties
-                // Add a new field, e.g., 'authorNames'
-                book:{
-                    ...e.book, // Spread existing book properties
-                    authorNames: e.book.author_ids.map(id => authorsMap[id] || 'Unknown Author').filter(name => name !== 'Unknown Author'), // Map IDs to names, handle missing authors
-                }
-                // Or replace author_ids if you prefer
-                // authors: book.author_ids.map(id => ({ id: id, name: authorsMap[id] || 'Unknown Author' })).filter(a => a.name !== 'Unknown Author')
-            };
-        });
 
         // --- Response ---
         handleSuccess(res, {
-            data: booksWithAuthorNames,
+            data: transactions,
             pagination: {
                 totalItems: totalTransactions,
                 currentPage: page,
