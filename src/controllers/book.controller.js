@@ -203,6 +203,7 @@ exports.getAllBooks = async (req, res, next) => {
         }
 
         // --- Database Query ---
+        console.time("Fetching Books");
         const [booksData, totalBooks] = await prisma.$transaction([
             prisma.book.findMany({
                 where,
@@ -213,6 +214,7 @@ exports.getAllBooks = async (req, res, next) => {
             }),
             prisma.book.count({ where })
         ]);
+        console.timeEnd("Fetching Books");
         
         // 2. Extract all unique author IDs from the results
         const allAuthorIds = booksData.reduce((ids, book) => {
@@ -224,6 +226,7 @@ exports.getAllBooks = async (req, res, next) => {
         
         // 3. Fetch the corresponding authors IF there are any IDs
         let authorsMap = {}; // Use a map for easy lookup: { authorId: name }
+        console.time("Fetching Authors");
         if (uniqueAuthorIds.length > 0) {
             const authors = await prisma.author.findMany({
                 where: {
@@ -241,6 +244,7 @@ exports.getAllBooks = async (req, res, next) => {
                 authorsMap[author.author_id] = author.name;
             });
         }
+        console.timeEnd("Fetching Authors");
         
         // 4. Map author names onto the book data (Modify the response structure)
         const booksWithAuthorNames = booksData.map(book => {

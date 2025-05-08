@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon .",
-    "start": "node .",
+    "start": "pm2 start . --name lms --attach",
     "postinstall": "prisma generate"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.10.1",
     "otp-generator": "^4.0.1",
+    "pm2": "^6.0.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
