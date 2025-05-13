@@ -1,6 +1,7 @@
 // src/controllers/borrowTransaction.controller.js
 const { Prisma } = require('@prisma/client');
 const { getPrismaClient } = require('../../prisma/client');
+const { broadcast } = require('../app');
 const prisma = getPrismaClient();
 
 // Helper for success responses
@@ -189,7 +190,11 @@ exports.borrowBook = async (req, res, next) => {
              maxWait: 10000, // Allow 10 seconds for the transaction
              timeout: 20000, // Overall timeout
         }); // End transaction
-
+        const broadcastMessage = {
+            type : 'borrow',
+            data : newTransaction
+        }
+        broadcast(JSON.stringify(broadcastMessage),{});
         handleSuccess(res, newTransaction, 201);
 
     } catch (error) {
@@ -207,6 +212,7 @@ exports.borrowBook = async (req, res, next) => {
         next(error); // Pass other errors to global handler
     }
 };
+
 
 /**
  * @method returnBook

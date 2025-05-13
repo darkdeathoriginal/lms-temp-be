@@ -502,7 +502,7 @@ exports.getAnalytics = async (req, res, next) => {
         const analyticsData = {
             dashboard: {
                 fineReports: {
-                    totalFines: fineData._sum.amount || 0,
+                    totalFines: Number(fineData._sum.amount) || 0,
                     overdueBooks: overdueBooksCount
                 },
                 circulationStatistics: {
@@ -519,16 +519,16 @@ exports.getAnalytics = async (req, res, next) => {
 
             details: {
                 fines: {
-                    totalFines: fineData._sum.amount || 0,
+                    totalFines: Number(fineData._sum.amount) || 0,
                     breakdown: {
-                        collected: finesPaid._sum.amount || 0,
-                        pending: finesPending._sum.amount || 0
+                        collected: Number(finesPaid._sum.amount) || 0,
+                        pending: Number(finesPending._sum.amount) || 0
                     },
                     monthlyTrend: {
-                        currentMonth: currentMonthFines._sum.amount || 0,
-                        lastMonth: lastMonthFines._sum.amount || 0,
-                        twoMonthsAgo: twoMonthsAgoFines._sum.amount || 0,
-                        threeMonthsAgo: threeMonthsAgoFines._sum.amount || 0
+                        currentMonth: Number(currentMonthFines._sum.amount) || 0,
+                        lastMonth: Number(lastMonthFines._sum.amount) || 0,
+                        twoMonthsAgo: Number(twoMonthsAgoFines._sum.amount) || 0,
+                        threeMonthsAgo: Number(threeMonthsAgoFines._sum.amount) || 0
                     }
                 },
 

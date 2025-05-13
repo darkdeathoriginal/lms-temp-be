@@ -24,8 +24,6 @@ const authenticate = async (req, res, next) => {
     try {
         // Verify the token using the secret key
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded);
-
 
         // --- Optional but Recommended: Check if user still exists and is active ---
 

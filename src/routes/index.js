@@ -16,7 +16,7 @@ const adminRoutes = require('./admin.routes');
 const otpRoutes = require('./otp.routes');
 const analyticsRoutes = require('./analytics.routes');
 // const ticketRoutes = require('./ticket.routes');
-// const fineRoutes = require('./fine.routes');
+const fineRoutes = require('./fine.routes');
 // const documentUploadRoutes = require('./documentUpload.routes');
 
 const router = express.Router();
@@ -68,7 +68,7 @@ router.use(`${API_PREFIX}/admin`, adminRoutes);
 router.use(`${API_PREFIX}/otp`, otpRoutes);
 router.use(`${API_PREFIX}/analytics`, analyticsRoutes);
 // router.use(`${API_PREFIX}/tickets`, ticketRoutes);
-// router.use(`${API_PREFIX}/fines`, fineRoutes);
+router.use(`${API_PREFIX}/fines`, fineRoutes);
 // router.use(`${API_PREFIX}/document-uploads`, documentUploadRoutes);
 
 // Add tags for Swagger documentation sections if not defined in controllers

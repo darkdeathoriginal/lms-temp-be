@@ -1,6 +1,7 @@
 // src/controllers/book.controller.js
 const { Prisma } = require('@prisma/client');
 const { getPrismaClient } = require('../../prisma/client');
+const { broadcast } = require('../app');
 const prisma = getPrismaClient();
 
 // Helper for success responses
@@ -148,6 +149,11 @@ exports.createBook = async (req, res, next) => {
 
             // 5. Send success response *after* transaction commits
             handleSuccess(res, newBook, 201);
+            const broadCastmessage= {
+                type: 'bookCreated',
+                data:newBook
+            }
+            broadcast(JSON.stringify(broadCastmessage), {}); // Broadcast the creation event
         });
 
     } catch (error) {
@@ -397,8 +403,25 @@ exports.updateBook = async (req, res, next) => {
             return bookAfterUpdate; // Return the updated book from the transaction block
 
         }); // End transaction
-
+        console.log(updatedBook);
+        
         handleSuccess(res, updatedBook); // Send response after transaction succeeds
+        let book = await prisma.book.findUnique({
+            where: { book_id: id },
+        })
+        const authorNames = await prisma.author.findMany({
+            where: { author_id: { in: book.author_ids } },   
+            select: { name: true }
+        });
+
+        const broadCastmessage= {
+            type: 'bookUpdated',
+            data:{
+                ...book,
+                authorNames: authorNames.map(author => author.name) // Add author names to the new book object
+            }
+        }
+        broadcast(JSON.stringify(broadCastmessage), {}); // Broadcast the update event
 
     } catch (error) {
          // --- Specific Error Handling ---
@@ -474,6 +497,7 @@ exports.deleteBook = async (req, res, next) => {
         }); // End transaction
 
         res.status(204).send(); // No content on successful delete
+        
 
     } catch (error) {
         // Catch the specific error thrown for active relations
